@@ -114,7 +114,9 @@ else()
 	set(X86 OFF)
 	if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(arm64|aarch64)$")
 		set(Architecture "arm64")
-		add_definitions(-DPNG_ARM_NEON_OPT=0)
+		if(!WASM)
+			add_definitions(-DPNG_ARM_NEON_OPT=0)
+		endif()
 	elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^arm")
 		set(Architecture "arm")
 	elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^i.86$")
@@ -141,6 +143,11 @@ message(STATUS "Architecture is ${Architecture}")
 
 if(WIN32 AND CMAKE_VERSION VERSION_LESS "3.4")
 message(WARNING "Building on Windows platform with CMake version less than 3.4 is deprecated. Manifest file will fail to be included.")
+endif()
+
+if(WASM)
+	set(Architecture "wasm")
+	set(CMAKE_OSX_ARCHITECTURES "")
 endif()
 
 # Current Git SHA1 hash
@@ -174,6 +181,40 @@ set(GSLIncludeDirectory "${OpenJKLibDir}/gsl-lite/include")
 include(InstallConfig)
 
 
+if(WASM)
+# add_compile_options(-arch "")
+set(CMAKE_SYSTEM_PROCESSOR "v8")
+set(CMAKE_HOST_SYSTEM_PROCESSOR "v8")
+set(INTERFACE_COMPILE_OPTIONS "")
+set(CMAKE_C_FLAGS "")
+set(CMAKE_CXX_FLAGS "")
+set(CMAKE_C_FLAGS_RELEASE "")
+set(CMAKE_C_FLAGS_DEBUG "")
+set(CMAKE_CXX_FLAGS_RELEASE "")
+set(CMAKE_CXX_FLAGS_DEBUG "")
+set(COMPILE_OPTIONS "")
+set(COMPILE_FLAGS "")
+set(LLVM_DEFAULT_TARGET_TRIPLE "wasm32-wasi")
+set(CMAKE_SYSTEM_NAME WASI)
+set(CMAKE_SYSTEM_PROCESSOR wasm32)
+set(OSX_ARCHITECTURES_DEBUG "")
+set(OSX_ARCHITECTURES_RELEASE "")
+set(OSX_ARCHITECTURES "")
+set(CMAKE_OSX_DEPLOYMENT_TARGET "")
+set(CMAKE_OSX_SYSROOT "")
+set(MACOSX_DEPLOYMENT_TARGET "FALSE")
+set(CMAKE_SYSTEM_PROCESSOR "v8")
+set(Architecture "wasm")
+set(CMAKE_SYSTEM_NAME "WASI")
+set(CMAKE_CROSSCOMPILING "TRUE")
+set(CMAKE_OSX_ARCHITECTURES "")
+set(CMAKE_OSX_ARCHITECTURES_DEBUG "")
+set(CMAKE_OSX_ARCHITECTURES_RELEASE "")
+set(ARCH_STRING "wasm32-wasi")
+
+endif()
+
+if(!WASM)
 
 # Operating settings
 if(WIN64)
@@ -188,7 +229,22 @@ if (NOT WIN32 AND NOT APPLE)
 	set(SharedDefines "ARCH_STRING=\"${Architecture}\"")
 endif()
 
+else()
 
+if (APPLE)
+set(COMPILE_PLATFORM "darwin")
+endif()
+
+if(WIN64)
+set(COMPILE_PLATFORM "win")
+endif()
+
+if (NOT WIN32 AND NOT APPLE)
+set(COMPILE_PLATFORM "linux")
+endif()
+
+
+endif()
 
 # Compiler settings
 if(MSVC)
@@ -223,6 +279,12 @@ if(MSVC)
 elseif (("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" MATCHES "Clang"))
 	# I hope this doesn't come back to bite me in the butt later on.
 	# Realistically though, can the C and CXX compilers be different?
+
+	if (Architecture STREQUAL "wasm")
+		set(CMAKE_C_COMPILER "${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/bin/clang")
+		set(CMAKE_CXX_COMPILER "${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/bin/clang++")
+		set(SharedDefines ${SharedDefines} "__WASM__")
+		endif()
 
 	# Visibility can't be set project-wide -- it needs to be specified on a
 	# per-target basis.  This is primarily due to the bundled copy of ZLib.
@@ -351,10 +413,14 @@ set(SharedCommonSafeFiles
 	)
 
 
+if(!WASM)
+
 if(UseInternalJPEG)
   add_subdirectory(lib/jpeg-9c)
 else()
   find_package(JPEG REQUIRED)
+endif()
+
 endif()
 
 if(UseInternalZlib)
@@ -363,10 +429,14 @@ else()
   find_package(ZLIB REQUIRED)
 endif()
 
+if(!WASM)
+
 if(UseInternalPNG)
   add_subdirectory(lib/libpng)
 else()
   find_package(PNG REQUIRED)
+endif()
+
 endif()
 
 # Always use bundled minizip (sets MINIZIP_{LIBRARIES,INCLUDE_DIR})
