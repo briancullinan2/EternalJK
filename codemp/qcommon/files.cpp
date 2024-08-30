@@ -30,10 +30,12 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
  *
  *****************************************************************************/
 
-#include <condition_variable>
 #include <deque>
+#ifndef __WASM__
+#include <condition_variable>
 #include <mutex>
 #include <thread>
+#endif
 #include <vector>
 
 #include "qcommon/qcommon.h"
@@ -278,7 +280,9 @@ typedef struct fileHandleData_s {
 			handleFiles({}),
 			handleSync(qfalse),
 			handleAsync(qfalse),
+#ifndef __WASM__
 			writerThread(nullptr),
+#endif
 			closed(qfalse),
 			fileSize(0),
 			zipFilePos(0),
@@ -290,9 +294,11 @@ typedef struct fileHandleData_s {
 	qfile_ut	handleFiles;
 	qboolean	handleSync;
 	qboolean	handleAsync;
+#ifndef __WASM__
 	std::thread	*writerThread;
 	std::mutex	writeLock;
 	std::condition_variable	cv;
+#endif
 	std::deque<std::vector<byte> > writes;
 	qboolean	closed;
 	char		ospath[MAX_OSPATH];
@@ -348,8 +354,10 @@ static void FS_ResetFileHandleData( fileHandleData_t *f ) {
 	f->handleFiles = {};
 	f->handleSync = qfalse;
 	f->handleAsync = qfalse;
+#ifndef __WASM__
 	assert(f->writerThread == nullptr);
 	f->writerThread = nullptr;
+#endif
 	f->writes.clear();
 	f->closed = qfalse;
 	f->ospath[0] = '\0';
@@ -1066,9 +1074,11 @@ void FS_FCloseAio( int handle ) {
 	if ( f < 1 || f >= MAX_FILE_HANDLES ) {
 		Com_Error( ERR_FATAL, "FCloseAio called with invalid handle %d\n", f );
 	}
+#ifndef __WASM__
 	fsh[f].writerThread->join();
 	delete fsh[f].writerThread;
 	fsh[f].writerThread = nullptr;
+#endif
 	FS_ResetFileHandleData( &fsh[f] );
 }
 
@@ -1108,10 +1118,14 @@ void FS_FCloseFile( fileHandle_t f ) {
 		if ( fsh[f].handleAsync ) {
 			// queue the file to be closed after all pending operations are completed.
 			{
+#ifndef __WASM__
 				std::lock_guard<std::mutex> l( fsh[f].writeLock );
+#endif
 				fsh[f].closed = qtrue;
 			}
+#ifndef __WASM__
 			fsh[f].cv.notify_one();
+#endif
 			return;
 		} else {
 			fclose (fsh[f].handleFiles.file.o);
@@ -1133,9 +1147,13 @@ void FS_AsyncWriterThread( fileHandle_t h ) {
 	while ( qtrue ) {
 		std::vector<byte> write;
 		{
+#ifndef __WASM__
 			std::unique_lock<std::mutex> l( f->writeLock );
+#endif
 			while ( f->writes.empty() && !f->closed ) {
+#ifndef __WASM__
 				f->cv.wait( l );
+#endif
 			}
 			if ( f->closed && f->writes.empty() ) {
 				break;
@@ -1153,6 +1171,7 @@ void FS_AsyncWriterThread( fileHandle_t h ) {
 	Com_PushEvent( &event );
 }
 
+#ifndef __WASM__
 fileHandle_t FS_FOpenFileWriteAsync( const char *filename, qboolean safe ) {
 	fileHandle_t f = FS_HandleForFile();
 	Q_strncpyz(fsh[f].ospath, FS_BuildOSPath( fs_homepath->string, fs_gamedir, filename ), MAX_OSPATH );
@@ -1167,6 +1186,8 @@ fileHandle_t FS_FOpenFileWriteAsync( const char *filename, qboolean safe ) {
 	fsh[f].writerThread = new std::thread( FS_AsyncWriterThread, f );
 	return f;
 }
+
+#endif
 
 /*
 ===========
@@ -1849,10 +1870,14 @@ int FS_Write( const void *buffer, int len, fileHandle_t h ) {
 
 	if ( fsh[h].handleAsync ) {
 		{
+#ifndef __WASM__
 			std::lock_guard<std::mutex> l( fsh[h].writeLock );
+#endif
 			fsh[h].writes.emplace_back( buf, buf + len );
 		}
+#ifndef __WASM__
 		fsh[h].cv.notify_one();
+#endif
 		return len;
 	} else {
 		f = FS_FileForHandle( h );

@@ -89,6 +89,11 @@ extern cvar_t *com_maxfps;
 extern cvar_t *com_maxfpsMinimized;
 extern cvar_t *com_maxfpsUnfocused;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 sysEvent_t	Sys_GetEvent( void );
 
 void	Sys_Init (void);
@@ -99,6 +104,7 @@ typedef intptr_t QDECL VMMainProc( int, intptr_t, intptr_t, intptr_t, intptr_t, 
 typedef intptr_t QDECL SystemCallProc( intptr_t, ... );
 typedef void * QDECL GetModuleAPIProc( int, ... );
 
+
 void	* QDECL Sys_LoadDll(const char *name, qboolean useSystemLib);
 void	* QDECL Sys_LoadLegacyGameDll( const char *name, VMMainProc **vmMain, SystemCallProc *systemcalls );
 void	* QDECL Sys_LoadGameDll( const char *name, GetModuleAPIProc **moduleAPI );
@@ -108,18 +114,22 @@ char	*Sys_GetCurrentUser( void );
 
 void	NORETURN QDECL Sys_Error( const char *error, ... );
 void	NORETURN Sys_Quit (void);
+
 void	Sys_SetClipboardData(const char *);
 char	*Sys_GetClipboardData( void );	// note that this isn't journaled...
 
 void	Sys_Print( const char *msg );
 
+
 // Sys_Milliseconds should only be used for profiling purposes,
 // any game related timing information should come from event timestamps
-int		Sys_Milliseconds (bool baseTime = false);
+extern int		Sys_Milliseconds (bool baseTime = false);
+
+
 int		Sys_Milliseconds2(void);
 void	Sys_Sleep( int msec );
 
-extern "C" void	Sys_SnapVector( float *v );
+void	Sys_SnapVector( float *v );
 
 bool Sys_RandomBytes( byte *string, int len );
 
@@ -159,6 +169,10 @@ qboolean Sys_LowPhysicalMemory();
 void Sys_SetProcessorAffinity( void );
 #ifdef _WIN32
 void Sys_SetProcessPriority(void);
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 typedef enum graphicsApi_e

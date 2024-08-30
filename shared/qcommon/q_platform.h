@@ -87,7 +87,7 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 	#define DLL_EXT ".dll"
 
 // MAC OS X
-#elif defined(MACOS_X) || defined(__APPLE_CC__)
+#elif defined(MACOS_X) || defined(__APPLE_CC__) || defined(__APPLE__)
 
 	// make sure this is defined, just for sanity's sake...
 	#ifndef MACOS_X
@@ -114,6 +114,25 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 	#endif
 
     #define DLL_EXT ".dylib"
+
+//===============================__WASM__=================================
+
+#elif defined(__WASM__)
+
+#define OS_STRING "webassembly"
+#define QINLINE inline
+#define PATH_SEP '/'
+#define PATH_SEP_FOREIGN '\\'
+
+#define ARCH_STRING "js"
+
+#define Q3_LITTLE_ENDIAN
+
+#undef DLL_EXT
+#define DLL_EXT ".wasm"
+
+#define USE_MASTER_LAN 1
+
 
 // Linux
 #elif defined(__linux__) || defined(__FreeBSD_kernel__)

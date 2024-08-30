@@ -162,6 +162,7 @@ if(BuildMPEngine OR BuildMPDed)
 	source_group("server" FILES ${MPBotlibServerFiles})
 	set(MPBotlibFiles ${MPBotlibFiles} ${MPBotlibServerFiles})
 
+	if(!WASM)
 	add_library(${MPBotLib} STATIC ${MPBotlibFiles})
 
 	# Hide symbols not explicitly marked public.
@@ -175,27 +176,64 @@ if(BuildMPEngine OR BuildMPDed)
 
 	# libraries: Botlib
 	set(MPEngineAndDedLibraries ${MPBotLib})
+
 	# Platform-specific libraries
 	if(WIN32)
 		set(MPEngineAndDedLibraries ${MPEngineAndDedLibraries} "winmm" "wsock32")
 	endif(WIN32)
+
+	endif()
 
 	# Include directories
 	set(MPEngineAndDedIncludeDirectories ${MPDir} ${SharedDir} ${GSLIncludeDirectory}) # codemp folder, since includes are not always relative in the files
 
 	# Transparently use our bundled minizip.
 	list(APPEND MPEngineAndDedIncludeDirectories ${MINIZIP_INCLUDE_DIRS})
+
+	if(!WASM)
+
 	list(APPEND MPEngineAndDedLibraries          ${MINIZIP_LIBRARIES})
+
+	endif()
 
 	# Transparently use either bundled or system zlib.
 	list(APPEND MPEngineAndDedIncludeDirectories ${ZLIB_INCLUDE_DIR})
+
+	if(!WASM)
+
 	list(APPEND MPEngineAndDedLibraries          ${ZLIB_LIBRARIES})
+
+	endif()
 
 	set(MPEngineAndDedCgameFiles
 		"${MPDir}/cgame/cg_public.h"
 		)
 	source_group("cgame" FILES ${MPEngineAndDedCgameFiles})
 	set(MPEngineAndDedFiles ${MPEngineAndDedFiles} ${MPEngineAndDedCgameFiles})
+
+
+	if(WASM)
+	set(MPEngineAndDedFiles
+		${MPEngineAndDedFiles}
+		${OpenJKLibDir}/minizip/unzip.cpp
+		${OpenJKLibDir}/zlib/adler32.c
+		${OpenJKLibDir}/zlib/compress.c
+		${OpenJKLibDir}/zlib/crc32.c
+		${OpenJKLibDir}/zlib/deflate.c
+		${OpenJKLibDir}/zlib/gzclose.c
+		${OpenJKLibDir}/zlib/gzlib.c
+		${OpenJKLibDir}/zlib/gzread.c
+		${OpenJKLibDir}/zlib/gzwrite.c
+		${OpenJKLibDir}/zlib/infback.c
+		${OpenJKLibDir}/zlib/inffast.c
+		${OpenJKLibDir}/zlib/inflate.c
+		${OpenJKLibDir}/zlib/inftrees.c
+		${OpenJKLibDir}/zlib/trees.c
+		${OpenJKLibDir}/zlib/uncompr.c
+		${OpenJKLibDir}/zlib/zutil.c
+	)
+	include_directories(${CMAKE_SOURCE_DIR}/lib/minizip/include/minizip)
+	endif()
 
 	set(MPEngineAndDedClientFiles
 		"${MPDir}/client/client.h"
@@ -369,7 +407,9 @@ if(BuildMPEngine)
 		# OpenGL
 		find_package(OpenGL REQUIRED)
 		set(MPEngineIncludeDirectories ${MPEngineIncludeDirectories} ${OPENGL_INCLUDE_DIR})
+	if(!WASM)
 		set(MPEngineLibraries ${MPEngineLibraries} ${OPENGL_LIBRARIES})
+	endif()
 	endif()
 
 	# Discord Rich Presence
@@ -430,9 +470,11 @@ if(BuildMPEngine)
 			${OpenJKLibDir}/SDL2/include
 			)
 	else()
+	if(!WASM)
 		find_package(SDL2 REQUIRED)
 		set(MPEngineIncludeDirectories ${MPEngineIncludeDirectories} ${SDL2_INCLUDE_DIR})
 		set(MPEngineLibraries ${MPEngineLibraries} ${SDL2_LIBRARY})
+	endif()
 	endif()
 
 	# EAX is Windows-Only (right?)
@@ -537,9 +579,17 @@ if(BuildMPEngine)
 		"${MPDir}/mp3code/upsf.c"
 		"${MPDir}/mp3code/wavep.c"
 		)
-	source_group("mp3code" FILES ${MPEngineMp3Files})
-	set(MPEngineFiles ${MPEngineFiles} ${MPEngineMp3Files})
 
+	if(!WASM)
+		source_group("mp3code" FILES ${MPEngineMp3Files})
+		set(MPEngineFiles ${MPEngineFiles} ${MPEngineMp3Files})
+	endif()
+
+	if(WASM)
+	set(MPEngineSysFiles
+		"${MPDir}/wasm/sys_main.cpp"
+		)
+	else()
 	set(MPEngineSysFiles
 		"${SharedDir}/sdl/sdl_window.cpp"
 		"${SharedDir}/sdl/sdl_icon.h"
@@ -578,8 +628,11 @@ if(BuildMPEngine)
 			)
 	endif(WIN32)
 
+	endif() # !__WASM__
+
 	set(MPEngineFiles ${MPEngineFiles} ${MPEngineSysFiles})
 	source_group("sys" FILES ${MPEngineSysFiles})
+
 
 	if(MakeApplicationBundles)
 		set(MACOSX_BUNDLE_BUNDLE_NAME ${MPEngine})

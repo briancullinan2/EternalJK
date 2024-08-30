@@ -36,12 +36,22 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 #		define Sys_LibraryError() dlerror()
 #	endif
 #else
+#ifndef __WASM__
 #	include <SDL.h>
 #	include <SDL_loadso.h>
+#endif
 #	define Sys_LoadLibrary(f) SDL_LoadObject(f)
 #	define Sys_UnloadLibrary(h) SDL_UnloadObject(h)
 #	define Sys_LoadFunction(h,fn) SDL_LoadFunction(h,fn)
 #	define Sys_LibraryError() SDL_GetError()
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 void * QDECL Sys_LoadDll(const char *name, qboolean useSystemLib);
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus

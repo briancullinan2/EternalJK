@@ -115,7 +115,7 @@ else()
 	if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(arm64|aarch64)$")
 		set(Architecture "arm64")
 		if(!WASM)
-			add_definitions(-DPNG_ARM_NEON_OPT=0)
+		add_definitions(-DPNG_ARM_NEON_OPT=0)
 		endif()
 	elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^arm")
 		set(Architecture "arm")
@@ -181,38 +181,6 @@ set(GSLIncludeDirectory "${OpenJKLibDir}/gsl-lite/include")
 include(InstallConfig)
 
 
-if(WASM)
-# add_compile_options(-arch "")
-set(CMAKE_SYSTEM_PROCESSOR "v8")
-set(CMAKE_HOST_SYSTEM_PROCESSOR "v8")
-set(INTERFACE_COMPILE_OPTIONS "")
-set(CMAKE_C_FLAGS "")
-set(CMAKE_CXX_FLAGS "")
-set(CMAKE_C_FLAGS_RELEASE "")
-set(CMAKE_C_FLAGS_DEBUG "")
-set(CMAKE_CXX_FLAGS_RELEASE "")
-set(CMAKE_CXX_FLAGS_DEBUG "")
-set(COMPILE_OPTIONS "")
-set(COMPILE_FLAGS "")
-set(LLVM_DEFAULT_TARGET_TRIPLE "wasm32-wasi")
-set(CMAKE_SYSTEM_NAME WASI)
-set(CMAKE_SYSTEM_PROCESSOR wasm32)
-set(OSX_ARCHITECTURES_DEBUG "")
-set(OSX_ARCHITECTURES_RELEASE "")
-set(OSX_ARCHITECTURES "")
-set(CMAKE_OSX_DEPLOYMENT_TARGET "")
-set(CMAKE_OSX_SYSROOT "")
-set(MACOSX_DEPLOYMENT_TARGET "FALSE")
-set(CMAKE_SYSTEM_PROCESSOR "v8")
-set(Architecture "wasm")
-set(CMAKE_SYSTEM_NAME "WASI")
-set(CMAKE_CROSSCOMPILING "TRUE")
-set(CMAKE_OSX_ARCHITECTURES "")
-set(CMAKE_OSX_ARCHITECTURES_DEBUG "")
-set(CMAKE_OSX_ARCHITECTURES_RELEASE "")
-set(ARCH_STRING "wasm32-wasi")
-
-endif()
 
 if(!WASM)
 
@@ -241,6 +209,15 @@ endif()
 
 if (NOT WIN32 AND NOT APPLE)
 set(COMPILE_PLATFORM "linux")
+endif()
+
+if (WASM)
+set(GSLIncludeDirectory "${GSLIncludeDirectory}" "${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/include/wasm32-wasi/c++/v1")
+set(GSLIncludeDirectory "${GSLIncludeDirectory}" "${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/include/wasm32-wasi")
+set(GSLIncludeDirectory "${GSLIncludeDirectory}" "${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/lib/clang/18/include")
+set(GSLIncludeDirectory "${GSLIncludeDirectory}" "${MPDir}/wasm")
+set(UseInternalSDL2Default   OFF)
+
 endif()
 
 
@@ -280,11 +257,64 @@ elseif (("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" M
 	# I hope this doesn't come back to bite me in the butt later on.
 	# Realistically though, can the C and CXX compilers be different?
 
-	if (Architecture STREQUAL "wasm")
+	if (WASM)
+	 	set(BuildMPDed OFF)
+
+		set(THREADS_PREFER_PTHREAD_FLAG FALSE)
+		set(CMAKE_THREAD_LIBS_INIT FALSE)
+		set(CMAKE_USE_PTHREADS_INIT FALSE)
+		set(SKIP_BUILD_RPATH TRUE)
+		set(CMAKE_SKIP_RPATH TRUE)
+		set(FRAMEWORK "")
+		set(CMAKE_FRAMEWORK "")
+		set(CMAKE_C_LINK_FLAGS "")
+		set(CMAKE_CXX_LINK_FLAGS "")
+		# set(HAVE_FLAG_ARCH 0)
+		# set(HAVE_FLAG_SEARCH_PATHS_FIRST 0)
+		set(CMAKE_SYSTEM_NAME WASI)
 		set(CMAKE_C_COMPILER "${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/bin/clang")
 		set(CMAKE_CXX_COMPILER "${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/bin/clang++")
+		set(CMAKE_OSX_SYSROOT "")
+		set(CMAKE_OSX_DEPLOYMENT_TARGET "")
+		include_directories("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/include/wasm32-wasi/c++/v1")
+		# include_directories("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/include/wasm32-wasi/c++/v1/cstddef")
+		include_directories("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/include/wasm32-wasi")
+		include_directories("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/lib/clang/18/include")
+		include_directories("${MPDir}/wasm")
+		add_compile_options(-I${CMAKE_SOURCE_DIR}/lib/minizip/include/minizip)
+		include_directories(${CMAKE_SOURCE_DIR}/lib/zlib/include)
+		include_directories(${CMAKE_SOURCE_DIR}/shared)
+		include_directories(${MPDir})
+		# add_compile_options(-std=c++11)
+		add_compile_options(--target=wasm32)
+		add_compile_options(--no-standard-libraries)
+		add_compile_options(-fno-inline)
+		add_compile_options(-fno-common)
+		add_compile_options(-D__WASM__=1)
+		add_compile_options(-D__wasi__=1)
+		add_compile_options(-D__wasm32__=1)
+		add_compile_options(-Wimplicit)
+		# add_compile_options(-MMD)
+		add_compile_options(-Wno-deprecated)
+		add_compile_options(-Wno-macro-redefined)
+		option(UseInternalSDL2   OFF)
+
 		set(SharedDefines ${SharedDefines} "__WASM__")
-		endif()
+		set(SharedDefines ${SharedDefines} "__wasi__")
+		set(SharedDefines ${SharedDefines} "__wasm32__")
+
+		add_link_options(--no-standard-libraries)
+		add_link_options(-Wl,--export=_start)
+		add_link_options(-Wl,--export-dynamic)
+		add_link_options(-lc++)
+		add_link_options(-lrt)
+		# add_link_options(-lc)
+		add_link_options("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/lib/clang/18/lib/wasi/libclang_rt.builtins-wasm32.a")
+		add_link_options("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc++.a")
+		add_link_options("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc.a")
+		add_link_options(-Wl,--allow-undefined-file=${MPDir}/wasm/wasm.syms)
+		add_link_options(-Wl,--error-limit=0)
+	endif()
 
 	# Visibility can't be set project-wide -- it needs to be specified on a
 	# per-target basis.  This is primarily due to the bundled copy of ZLib.
@@ -312,9 +342,12 @@ elseif (("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" M
 	# enable somewhat modern C++
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 	
+	if(!WASM)
 	# enable support for multithreading
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 	
+	endif()
+
 	if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-comment")
@@ -442,6 +475,7 @@ endif()
 # Always use bundled minizip (sets MINIZIP_{LIBRARIES,INCLUDE_DIR})
 add_subdirectory(lib/minizip)
 
+
 # Add projects
 add_subdirectory(${MPDir})
 # Windows Symbol Server tools
@@ -452,3 +486,4 @@ if(BuildTests)
 	enable_testing()
 	add_subdirectory("tests")
 endif()
+

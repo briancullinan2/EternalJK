@@ -24,6 +24,33 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include "qcommon/qcommon.h"
 
+#ifdef __WASM__
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int NET_OpenIP(void);
+uint16_t ntohs(uint16_t n);
+void Sys_SendPacket( int length, const void *data, netadr_t to );
+void Sys_SockaddrToString(char *dest, int destlen, const void *input);
+void NET_Restart_f( void );
+#ifdef __cplusplus
+}
+#endif
+
+#define FD_SETSIZE 1024
+typedef struct {
+	unsigned long fds_bits[FD_SETSIZE / 8 / sizeof(long)];
+} fd_set;
+
+#ifdef USE_MULTIVM_SERVER
+int NET_GetPacket( netadr_t *net_from, msg_t *net_message, const fd_set *fdr, int igvm );
+#else
+int NET_GetPacket( netadr_t *net_from, msg_t *net_message, const fd_set *fdr );
+#endif
+
+#else // !__WASM__
+
 #ifdef _WIN32
 	#include <winsock.h>
 
@@ -80,6 +107,8 @@ typedef int SOCKET;
 
 #endif
 
+#endif // !__WASM__
+
 static qboolean usingSocks = qfalse;
 static qboolean networkingEnabled = qfalse;
 
@@ -97,16 +126,22 @@ static cvar_t	*net_port;
 
 static cvar_t	*net_dropsim;
 
+#ifndef __WASM__
+
 static struct sockaddr_in	socksRelayAddr;
 
 static SOCKET	ip_socket = INVALID_SOCKET;
 static SOCKET	socks_socket = INVALID_SOCKET;
+
+#endif
 
 #define	MAX_IPS		16
 static	int		numIP;
 static	byte	localIP[MAX_IPS][4];
 
 //=============================================================================
+
+#ifndef __WASM__
 
 /*
 ====================
@@ -235,6 +270,7 @@ qboolean Sys_StringToAdr( const char *s, netadr_t *a ) {
 }
 
 //=============================================================================
+
 
 /*
 ==================
@@ -847,6 +883,8 @@ void NET_OpenIP( void )
 
 //===================================================================
 
+#endif
+
 /*
 ====================
 NET_GetCvars
@@ -938,6 +976,7 @@ void NET_Config( qboolean enableNetworking ) {
 		networkingEnabled = enableNetworking;
 	}
 
+#ifndef __WASM__
 	if ( stop ) {
 		if ( ip_socket != INVALID_SOCKET ) {
 			closesocket( ip_socket );
@@ -949,6 +988,8 @@ void NET_Config( qboolean enableNetworking ) {
 			socks_socket = INVALID_SOCKET;
 		}
 	}
+#endif
+
 
 	if ( start ) {
 		if ( net_enabled->integer )
@@ -994,6 +1035,10 @@ void NET_Shutdown( void ) {
 	winsockInitialized = qfalse;
 #endif
 }
+
+
+#ifndef __WASM__
+
 
 /*
 ====================
@@ -1083,3 +1128,5 @@ NET_Restart_f
 void NET_Restart_f( void ) {
 	NET_Config( qtrue );
 }
+
+#endif

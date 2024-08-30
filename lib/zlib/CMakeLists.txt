@@ -34,21 +34,24 @@ if(MSVC)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /wd4996")
 endif(MSVC)
 
-add_library(bundled_zlib STATIC adler32.c
-                                compress.c
-                                crc32.c
-                                deflate.c
-                                gzclose.c
-                                gzlib.c
-                                gzread.c
-                                gzwrite.c
-                                infback.c
-                                inffast.c
-                                inflate.c
-                                inftrees.c
-                                trees.c
-                                uncompr.c
-                                zutil.c)
+set(ZLIB_FILES adler32.c
+  compress.c
+  crc32.c
+  deflate.c
+  gzclose.c
+  gzlib.c
+  gzread.c
+  gzwrite.c
+  infback.c
+  inffast.c
+  inflate.c
+  inftrees.c
+  trees.c
+  uncompr.c
+  zutil.c)
+
+source_group("zlib" FILES ${ZLIB_FILES})
+add_library(bundled_zlib STATIC ${ZLIB_FILES})
 
 # Let consumers get at our bundled copy in the standard CMake way.  These
 # variables are not set in the cache, but instead shadow the variables in the

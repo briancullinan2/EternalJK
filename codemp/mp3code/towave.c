@@ -260,7 +260,7 @@ char *C_MP3_IsValid(void *pvData, int iDataLen, int bStereoDesired)
 
 	memset(pMP3Stream,0,sizeof(*pMP3Stream));
 
-	iFrameBytes = head_info3( pvData, iDataLen/2, &head, &iBitRate, &iRealDataStart);
+	iFrameBytes = head_info3( (unsigned char*)pvData, iDataLen/2, &head, &iBitRate, &iRealDataStart);
 	if (iFrameBytes == 0)
 	{
 		return "MP3ERR: Bad or unsupported file!";
@@ -336,7 +336,7 @@ char* C_MP3_GetHeaderData(void *pvData, int iDataLen, int *piRate, int *piWidth,
 
 	memset(pMP3Stream,0,sizeof(*pMP3Stream));
 
-	iFrameBytes = head_info3( pvData, iDataLen/2, &head, &iBitRate, &iRealDataStart);
+	iFrameBytes = head_info3( (unsigned char*)pvData, iDataLen/2, &head, &iBitRate, &iRealDataStart);
 	if (iFrameBytes == 0)
 	{
 		return "MP3ERR: Bad or unsupported file!";
@@ -393,7 +393,7 @@ char *C_MP3_GetUnpackedSize(void *pvData, int iSourceBytesRemaining, int *piUnpa
 #define iSourceReadIndex iRealDataStart
 
 //	iFrameBytes = head_info2( pvData, 0, &head, &iBitRate);
-	iFrameBytes = head_info3( pvData, iSourceBytesRemaining/2, &head, &iBitRate, &iRealDataStart);
+	iFrameBytes = head_info3( (unsigned char *)pvData, iSourceBytesRemaining/2, &head, &iBitRate, &iRealDataStart);
 
 	BYTESREMAINING_ACCOUNT_FOR_REAR_TAG(pvData, iSourceBytesRemaining)
 	iSourceBytesRemaining -= iRealDataStart;
@@ -494,7 +494,7 @@ char *C_MP3_UnpackRawPCM( void *pvData, int iSourceBytesRemaining, int *piUnpack
 #define iSourceReadIndex iRealDataStart
 
 //	iFrameBytes = head_info2( pvData, 0, &head, &iBitRate);
-	iFrameBytes = head_info3( pvData, iSourceBytesRemaining/2, &head, &iBitRate, &iRealDataStart);
+	iFrameBytes = head_info3( (unsigned char *)pvData, iSourceBytesRemaining/2, &head, &iBitRate, &iRealDataStart);
 
 	BYTESREMAINING_ACCOUNT_FOR_REAR_TAG(pvData, iSourceBytesRemaining)
 	iSourceBytesRemaining -= iRealDataStart;

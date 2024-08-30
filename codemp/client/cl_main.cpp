@@ -2678,9 +2678,11 @@ void CL_InitRef( void ) {
 
 	memset( &ri, 0, sizeof( ri ) );
 
+#ifndef __WASM__
 	GetRefAPI = (GetRefAPI_t)Sys_LoadFunction( rendererLib, "GetRefAPI" );
 	if ( !GetRefAPI )
 		Com_Error( ERR_FATAL, "Can't load symbol GetRefAPI: '%s'", Sys_LibraryError() );
+#endif
 
 	//set up the import table
 	ri.Printf = CL_RefPrintf;

@@ -138,7 +138,14 @@ typedef enum {
 
 void		NET_Init( void );
 void		NET_Shutdown( void );
+#ifdef __cplusplus
+extern "C" {
+#endif
 void		NET_Restart_f( void );
+#ifdef __cplusplus
+}
+#endif
+
 void		NET_Config( qboolean enableNetworking );
 
 void		NET_SendPacket (netsrc_t sock, int length, const void *data, netadr_t to);

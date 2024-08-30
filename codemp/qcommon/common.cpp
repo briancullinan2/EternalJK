@@ -131,9 +131,13 @@ to the appropriate place.
 A raw string should NEVER be passed as fmt, because of "%f" type crashers.
 =============
 */
+#ifndef __WASM__
 std::recursive_mutex printfLock;
+#endif
 void QDECL Com_Printf( const char *fmt, ... ) {
+#ifndef __WASM__
 	std::lock_guard<std::recursive_mutex> l( printfLock );
+#endif
 
 	static qboolean opening_qconsole = qfalse;
 	va_list		argptr;
@@ -172,7 +176,7 @@ void QDECL Com_Printf( const char *fmt, ... ) {
 
 			opening_qconsole = qtrue;
 
-			time( &aclock );
+			time( (int *)&aclock );
 			newtime = localtime( &aclock );
 
 			logfile = FS_FOpenFileWrite( "qconsole.log" );
@@ -805,9 +809,13 @@ void Com_InitPushEvent( void ) {
 Com_PushEvent
 =================
 */
+#ifndef __WASM__
 std::mutex pushLock;
+#endif
 void Com_PushEvent( sysEvent_t *event ) {
+#ifndef __WASM__
 	std::lock_guard<std::mutex> l( pushLock );
+#endif
 
 	sysEvent_t		*ev;
 	static int printedWarning = 0;
@@ -841,7 +849,9 @@ Com_GetEvent
 */
 sysEvent_t	Com_GetEvent( void ) {
 	{
+#ifndef __WASM__
 		std::lock_guard<std::mutex> l( pushLock );
+#endif
 		if ( com_pushedEventsHead > com_pushedEventsTail ) {
 			com_pushedEventsTail++;
 			return com_pushedEvents[ (com_pushedEventsTail-1) & (MAX_PUSHED_EVENTS-1) ];
@@ -1233,9 +1243,11 @@ void Com_Init( char *commandLine ) {
 		// allocate the stack based hunk allocator
 		Com_InitHunkMemory();
 
+#ifndef __WASM__
 #ifndef DEDICATED //initialize Steam API here so the cvar doesn't have to be set in the command line
 		Cvar_Get("com_steamIntegration", "1", CVAR_ARCHIVE|CVAR_LATCH, "Enables automatic Steam API integration (requires a steam_api.dll to be in GameData)");
 		Sys_SteamInit();
+#endif
 #endif
 
 		// if any archived cvars are modified after this, we will trigger a writing
@@ -1288,7 +1300,9 @@ void Com_Init( char *commandLine ) {
 
 		Sys_Init();
 
+#ifndef __WASM__
 		Sys_SetProcessorAffinity();
+#endif
 
 		// Pick a random port value
 		Com_RandomBytes( (byte*)&qport, sizeof(int) );
@@ -1672,7 +1686,9 @@ void Com_Frame( void ) {
 		if ( com_affinity->modified )
 		{
 			com_affinity->modified = qfalse;
+#ifndef __WASM__
 			Sys_SetProcessorAffinity();
+#endif
 		}
 
 #ifdef _WIN32
@@ -1724,7 +1740,9 @@ void Com_Shutdown (void)
 		com_journalFile = 0;
 	}
 
+#ifndef __WASM__
 	Sys_SteamShutdown();
+#endif
 
 	MSG_shutdownHuffman();
 /*

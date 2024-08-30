@@ -109,6 +109,10 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 #include <errno.h>
 #include <stddef.h>
 
+#ifdef __WASM__
+#include "../wasm/sys_overrides.h"
+#endif
+
 //Ignore __attribute__ on non-gcc platforms
 #if !defined(__GNUC__) && !defined(__attribute__)
 	#define __attribute__(x)
@@ -120,7 +124,9 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 	#define UNUSED_VAR
 #endif
 
-#if (defined _MSC_VER)
+#ifdef __WASM__
+	#define Q_EXPORT __attribute__((visibility("default")))
+#elif (defined _MSC_VER)
 	#define Q_EXPORT __declspec(dllexport)
 #elif (defined __SUNPRO_C)
 	#define Q_EXPORT __global
