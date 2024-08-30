@@ -230,7 +230,15 @@ void S_Spatialize(channel_t *ch);
 
 byte	*SND_malloc(int iSize, sfx_t *sfx);
 void	 SND_setup();
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+#ifdef __WASM__
+int		 SND_FreeOldestSound(void );
+#else
 int		 SND_FreeOldestSound(sfx_t *pButNotThisOne = NULL);
+#endif
+
 void	 SND_TouchSFX(sfx_t *sfx);
 
 qboolean SND_RegisterAudio_LevelLoadEnd(qboolean bDeleteEverythingNotUsedThisLevel /* 99% qfalse */);
@@ -239,5 +247,8 @@ void S_DisplayFreeMemory(void);
 void S_memoryLoad(sfx_t *sfx);
 //
 //////////////////////////////////
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #include "snd_mp3.h"

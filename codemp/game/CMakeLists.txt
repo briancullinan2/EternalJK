@@ -112,8 +112,6 @@ set(MPGameGameFiles
 	"${MPDir}/game/NPC_spawn.c"
 	"${MPDir}/game/NPC_stats.c"
 	"${MPDir}/game/NPC_utils.c"
-	"${MPDir}/game/sqlite3.c"
-	"${MPDir}/game/sqlite3.h"
 	"${MPDir}/game/SpeederNPC.c"
 	"${MPDir}/game/tri_coll_test.c"
 	"${MPDir}/game/w_force.c"

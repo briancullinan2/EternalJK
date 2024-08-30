@@ -325,7 +325,9 @@ T narrow( U u )
     
     if ( static_cast<U>( t ) != u ) 
     {
+#ifndef __WASM__
         throw narrowing_error(); 
+#endif
     }
     return t; 
 }

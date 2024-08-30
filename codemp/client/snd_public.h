@@ -25,6 +25,11 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include "qcommon/qcommon.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
+
 void S_Init( void );
 void S_Shutdown( void );
 
@@ -79,3 +84,7 @@ sfxHandle_t	S_RegisterSound( const char *sample );
 extern qboolean s_shutUp;
 
 void S_FreeAllSFXMem(void);
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+

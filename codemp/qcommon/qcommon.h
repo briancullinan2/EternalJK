@@ -994,8 +994,14 @@ void Key_KeynameCompletion ( void(*callback)( const char *s ) );
 void Key_WriteBindings( fileHandle_t f );
 // for writing the config files
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 void S_ClearSoundBuffer( void );
 // call before filesystem access
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 void SCR_DebugGraph (float value, int color);	// FIXME: move logging to common?
 

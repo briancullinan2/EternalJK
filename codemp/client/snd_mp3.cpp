@@ -30,6 +30,8 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 #include "snd_mp3.h"					// only included directly by a few snd_xxxx.cpp files plus this one
 #include "mp3code/mp3struct.h"	// keep this rather awful file secret from the rest of the program
 
+#ifndef __WASM__
+
 // expects data already loaded, filename arg is for error printing only
 //
 // returns success/fail
@@ -566,6 +568,8 @@ qboolean MP3Stream_GetSamples( channel_t *ch, int startingSampleNum, int count, 
 
 	return qbStreamStillGoing;
 }
+
+#endif
 
 
 ///////////// eof /////////////

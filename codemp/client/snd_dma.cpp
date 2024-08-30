@@ -226,6 +226,8 @@ int			s_entityWavVol_back[MAX_GENTITIES];
 
 int			s_numChannels;			// Number of AL Sources == Num of Channels
 
+#ifndef __WASM__
+
 #ifdef USE_OPENAL
 
 /**************************************************************************************************\
@@ -6378,3 +6380,7 @@ float CalcDistance(EMPOINT A, EMPOINT B)
 	return (float)sqrt(sqr(A.fX - B.fX)+sqr(A.fY - B.fY) + sqr(A.fZ - B.fZ));
 }
 #endif
+
+
+#endif
+

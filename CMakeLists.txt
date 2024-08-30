@@ -290,6 +290,7 @@ elseif (("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" M
 		add_compile_options(--no-standard-libraries)
 		add_compile_options(-fno-inline)
 		add_compile_options(-fno-common)
+		add_compile_options(-fno-exceptions)
 		add_compile_options(-D__WASM__=1)
 		add_compile_options(-D__wasi__=1)
 		add_compile_options(-D__wasm32__=1)
@@ -315,6 +316,10 @@ elseif (("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" M
 		add_link_options("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc.a")
 		add_link_options(-Wl,--allow-undefined-file=${MPDir}/wasm/wasm.syms)
 		add_link_options(-Wl,--error-limit=0)
+
+		set(CMAKE_STATIC_LIBRARY_SUFFIX ".wasm")
+		set(CMAKE_SHARED_LIBRARY_SUFFIX ".wasm")
+		
 	endif()
 
 	# Visibility can't be set project-wide -- it needs to be specified on a

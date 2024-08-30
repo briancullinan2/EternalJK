@@ -301,7 +301,9 @@ void NORETURN QDECL Com_Error( int code, const char *fmt, ... ) {
 	}
 
 	if ( code == ERR_DISCONNECT || code == ERR_SERVERDISCONNECT || code == ERR_DROP || code == ERR_NEED_CD ) {
+#ifndef __WASM__
 		throw code;
+#endif
 	} else {
 		CL_Shutdown ();
 		SV_Shutdown (va("Server fatal crashed: %s\n", com_errorMessage));
@@ -1162,8 +1164,10 @@ void Com_Init( char *commandLine ) {
 
 	Com_Printf( "%s %s %s\n", JK_VERSION, PLATFORM_STRING, SOURCE_DATE );
 
+#ifndef __WASM__
 	try
 	{
+#endif
 		// initialize the weak pseudo-random number generator for use later.
 		Com_InitRand();
 
@@ -1345,12 +1349,14 @@ void Com_Init( char *commandLine ) {
 
 		com_fullyInitialized = qtrue;
 		Com_Printf ("--- Common Initialization Complete ---\n");
+#ifndef __WASM__
 	}
 	catch ( int code )
 	{
 		Com_CatchError (code);
 		Sys_Error ("Error during initialization: %s", Com_ErrorString (code));
 	}
+#endif
 }
 
 //==================================================================
@@ -1514,8 +1520,10 @@ Com_Frame
 */
 void Com_Frame( void ) {
 
+#ifndef __WASM__
 	try
 	{
+#endif
 #ifdef G2_PERFORMANCE_ANALYSIS
 		G2PerformanceTimer_PreciseFrame.Start();
 #endif
@@ -1700,12 +1708,14 @@ void Com_Frame( void ) {
 #endif
 
 		com_frameNumber++;
+#ifndef __WASM__
 	}
 	catch (int code) {
 		Com_CatchError (code);
 		Com_Printf ("%s\n", Com_ErrorString (code));
 		return;
 	}
+#endif
 
 #ifdef G2_PERFORMANCE_ANALYSIS
 	G2Time_PreciseFrame += G2PerformanceTimer_PreciseFrame.End();

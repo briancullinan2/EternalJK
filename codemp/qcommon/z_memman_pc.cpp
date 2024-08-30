@@ -134,6 +134,17 @@ void Z_Validate(void)
 	}
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+#ifdef __WASM__
+int		 SND_FreeOldestSound(void );
+#else
+int		 SND_FreeOldestSound(sfx_t *pButNotThisOne = NULL);
+#endif
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 
 // static mem blocks to reduce a lot of small zone overhead
@@ -169,6 +180,16 @@ StaticMem_t gNumberString[] = {
 	{ {ZONE_MAGIC, TAG_STATIC,2,NULL,NULL},{'8','\0'},{ZONE_MAGIC}},
 	{ {ZONE_MAGIC, TAG_STATIC,2,NULL,NULL},{'9','\0'},{ZONE_MAGIC}},
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
+extern qboolean SND_RegisterAudio_LevelLoadEnd(qboolean bDeleteEverythingNotUsedThisLevel);
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
 
 qboolean gbMemFreeupOccured = qfalse;
 void *Z_Malloc(int iSize, memtag_t eTag, qboolean bZeroit /* = qfalse */, int iUnusedAlign /* = 4 */)
@@ -219,7 +240,6 @@ void *Z_Malloc(int iSize, memtag_t eTag, qboolean bZeroit /* = qfalse */, int iU
 
 			// ditch any sounds not used on this level...
 			//
-			extern qboolean SND_RegisterAudio_LevelLoadEnd(qboolean bDeleteEverythingNotUsedThisLevel);
 			if (SND_RegisterAudio_LevelLoadEnd(qtrue))
 			{
 				gbMemFreeupOccured = qtrue;
@@ -255,7 +275,6 @@ void *Z_Malloc(int iSize, memtag_t eTag, qboolean bZeroit /* = qfalse */, int iU
 			//	eventually or not free up enough and drop through to the final ERR_DROP. No worries...
 			//
 			extern qboolean gbInsideLoadSound;
-			extern int SND_FreeOldestSound();
 			if (!gbInsideLoadSound)
 			{
 				int iBytesFreed = SND_FreeOldestSound();

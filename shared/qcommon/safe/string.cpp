@@ -1,3 +1,4 @@
+#include "qcommon/q_shared.h"
 #include "string.h"
 #include "sscanf.h"
 
@@ -43,7 +44,7 @@ namespace Q
 	{
 		if( pos > lhs.size() )
 		{
-			throw std::out_of_range( "Q::substr called with out-of-bounds pos parameter!" );
+			Com_Error( ERR_DROP, "Q::substr called with out-of-bounds pos parameter!" );
 		}
 		auto start = lhs.begin() + pos;
 		auto end = count == std::string::npos ? lhs.end() : std::min( start + count, lhs.end() );
