@@ -126,6 +126,11 @@ SDL_CloseAudioDevice
 GLimp_Shutdown
 GLimp_StartDriverAndSetMode
 GL_GetDrawableSize
+NET_Restart_f
+Sys_DefaultInstallPath
+GetBotLibAPI
+Sys_GetClipboardData
+GetBotLibAPI
 
 
 glProgramLocalParameter4fARB

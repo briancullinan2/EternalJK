@@ -192,7 +192,9 @@ void *Z_Malloc(int iSize, memtag_t eTag, qboolean bZeroit /* = qfalse */, int iU
 	{
 		if (gbMemFreeupOccured)
 		{
+#ifndef __WASM__
 			Sys_Sleep(1000);	// sleep for a second, so Windows has a chance to shuffle mem to de-swiss-cheese it
+#endif
 		}
 
 		if (bZeroit) {

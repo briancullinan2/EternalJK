@@ -3398,7 +3398,9 @@ void CL_Init( void ) {
 	Cmd_SetCommandCompletionFunc( "rcon", CL_CompleteRcon );
 	Cmd_AddCommand ("ping", CL_Ping_f, "Ping a server for info response" );
 	Cmd_AddCommand ("serverstatus", CL_ServerStatus_f, "Retrieve current or specified server's status" );
+#ifndef __WASM__
 	Cmd_AddCommand ("showip", CL_ShowIP_f, "Shows local IP" );
+#endif
 	Cmd_AddCommand ("fs_openedList", CL_OpenedPK3List_f, "Lists open pak files" );
 	Cmd_AddCommand ("fs_referencedList", CL_ReferencedPK3List_f, "Lists referenced pak files" );
 	Cmd_AddCommand ("model", CL_SetModel_f, "Set the player model" );
@@ -4385,6 +4387,7 @@ void CL_ServerStatus_f(void) {
 	serverStatus->pending = qtrue;
 }
 
+#ifndef __WASM__
 /*
 ==================
 CL_ShowIP_f
@@ -4393,3 +4396,4 @@ CL_ShowIP_f
 void CL_ShowIP_f(void) {
 	Sys_ShowIP();
 }
+#endif
