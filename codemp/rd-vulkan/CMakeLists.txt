@@ -102,12 +102,18 @@ set(MPVulkanRendererRdCommonFiles
 	"${MPDir}/rd-common/tr_font.cpp"
 	"${MPDir}/rd-common/tr_font.h"
 	"${MPDir}/rd-common/tr_image_load.cpp"
-	"${MPDir}/rd-common/tr_image_jpg.cpp"
-	"${MPDir}/rd-common/tr_image_tga.cpp"
-	"${MPDir}/rd-common/tr_image_png.cpp"
 	"${MPDir}/rd-common/tr_noise.cpp"
 	"${MPDir}/rd-common/tr_public.h"
 	"${MPDir}/rd-common/tr_types.h")
+
+if(!WASM)
+	set(MPVulkanRendererRdCommonFiles
+	${MPVulkanRendererRdCommonFiles}
+	"${MPDir}/rd-common/tr_image_jpg.cpp"
+	"${MPDir}/rd-common/tr_image_tga.cpp"
+	"${MPDir}/rd-common/tr_image_png.cpp")
+endif()
+
 source_group("rd-common" FILES ${MPVulkanRendererRdCommonFiles})
 set(MPVulkanRendererFiles ${MPVulkanRendererFiles} ${MPVulkanRendererRdCommonFiles})
 
@@ -162,7 +168,11 @@ list(APPEND MPVulkanRendererLibraries          ${MINIZIP_LIBRARIES})
 #set(MPVulkanRendererLibraries ${MPVulkanRendererLibraries} ${OPENGL_LIBRARIES})
 
 set(MPVulkanRendererIncludeDirectories ${MPVulkanRendererIncludeDirectories} ${OpenJKLibDir})
+if(WASM)
+add_library(${MPVulkanRenderer} STATIC ${MPVulkanRendererFiles})
+else()
 add_library(${MPVulkanRenderer} SHARED ${MPVulkanRendererFiles})
+endif()
 
 if(NOT MSVC)
 	# remove "lib" prefix for .so/.dylib files
@@ -195,4 +205,6 @@ set_property(TARGET ${MPVulkanRenderer} APPEND PROPERTY COMPILE_OPTIONS ${OPENJK
 
 set_target_properties(${MPVulkanRenderer} PROPERTIES INCLUDE_DIRECTORIES "${MPVulkanRendererIncludeDirectories}")
 set_target_properties(${MPVulkanRenderer} PROPERTIES PROJECT_LABEL "MP Vulkan Renderer")
+if(!WASM)
 target_link_libraries(${MPVulkanRenderer} ${MPVulkanRendererLibraries})
+endif()

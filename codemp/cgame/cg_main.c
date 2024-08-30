@@ -28,6 +28,8 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 #include "ui/ui_shared.h"
 // display context for new ui stuff
 displayContextDef_t cgDC;
+loadableEmoji_t emojis[MAX_LOADABLE_EMOJIS];
+CosmeticUnlocks_t cosmeticUnlocks[MAX_COSMETIC_UNLOCKS];
 
 extern int cgSiegeRoundState;
 extern int cgSiegeRoundTime;

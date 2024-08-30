@@ -139,7 +139,11 @@ set(MPCGameGFiles
 source_group("ghoul2" FILES ${MPCGameG2Files})
 set(MPCGameFiles ${MPCGameFiles} ${MPCGameG2Files})
 
+if(WASM)
+add_library(${MPCGame} STATIC ${MPCGameFiles})
+else()
 add_library(${MPCGame} SHARED ${MPCGameFiles})
+endif()
 
 if(NOT MSVC)
 	# remove "lib" prefix for .so/.dylib files

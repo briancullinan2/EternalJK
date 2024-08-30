@@ -16,12 +16,38 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 #============================================================================
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.30)
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "Minimum OS X deployment version")
 
 # For checks in subdirectories
 set(InOpenJK TRUE)
 
+
+if (APPLE)
+set(COMPILE_PLATFORM "darwin")
+endif()
+
+if(WIN64)
+set(COMPILE_PLATFORM "win")
+endif()
+
+if (NOT WIN32 AND NOT APPLE)
+set(COMPILE_PLATFORM "linux")
+endif()
+
+
+if (WASM)
+	set(CMAKE_HOST_SYSTEM_PROCESSOR v8)
+	set(CMAKE_SYSTEM_PROCESSOR v8)
+	set(CMAKE_HOST_SYSTEM_NAME v8)
+	set(CMAKE_SYSTEM_NAME WASI)
+	set(CMAKE_MACOSX_BUNDLE OFF)
+	set(APPLE 0)
+	set(Architecture "wasm")
+	set(CMAKE_OSX_ARCHITECTURES "")
+	set(CMAKE_CROSSCOMPILING ON)
+	set(NO_DEFAULT_PATH ON)
+endif()
 
 
 # Project name
@@ -145,11 +171,6 @@ if(WIN32 AND CMAKE_VERSION VERSION_LESS "3.4")
 message(WARNING "Building on Windows platform with CMake version less than 3.4 is deprecated. Manifest file will fail to be included.")
 endif()
 
-if(WASM)
-	set(Architecture "wasm")
-	set(CMAKE_OSX_ARCHITECTURES "")
-endif()
-
 # Current Git SHA1 hash
 include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC GIT_SHA1)
@@ -197,29 +218,15 @@ if (NOT WIN32 AND NOT APPLE)
 	set(SharedDefines "ARCH_STRING=\"${Architecture}\"")
 endif()
 
-else()
-
-if (APPLE)
-set(COMPILE_PLATFORM "darwin")
-endif()
-
-if(WIN64)
-set(COMPILE_PLATFORM "win")
-endif()
-
-if (NOT WIN32 AND NOT APPLE)
-set(COMPILE_PLATFORM "linux")
-endif()
+endif() # !__WASM__
 
 if (WASM)
+
 set(GSLIncludeDirectory "${GSLIncludeDirectory}" "${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/include/wasm32-wasi/c++/v1")
 set(GSLIncludeDirectory "${GSLIncludeDirectory}" "${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/include/wasm32-wasi")
 set(GSLIncludeDirectory "${GSLIncludeDirectory}" "${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/lib/clang/18/include")
 set(GSLIncludeDirectory "${GSLIncludeDirectory}" "${MPDir}/wasm")
 set(UseInternalSDL2Default   OFF)
-
-endif()
-
 
 endif()
 
@@ -263,7 +270,9 @@ elseif (("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" M
 		set(THREADS_PREFER_PTHREAD_FLAG FALSE)
 		set(CMAKE_THREAD_LIBS_INIT FALSE)
 		set(CMAKE_USE_PTHREADS_INIT FALSE)
-		set(SKIP_BUILD_RPATH TRUE)
+		# set(BUILD_WITH_INSTALL_RPATH OFF)
+		# set(SKIP_BUILD_RPATH TRUE)
+		set(INSTALL_RPATH OFF)
 		set(CMAKE_SKIP_RPATH TRUE)
 		set(FRAMEWORK "")
 		set(CMAKE_FRAMEWORK "")
@@ -295,6 +304,8 @@ elseif (("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" M
 		add_compile_options(-D__wasi__=1)
 		add_compile_options(-D__wasm32__=1)
 		add_compile_options(-Wimplicit)
+		add_compile_options(-Wno-bitwise-op-parentheses)
+		add_compile_options(-Wno-shift-op-parentheses)
 		# add_compile_options(-MMD)
 		add_compile_options(-Wno-deprecated)
 		add_compile_options(-Wno-macro-redefined)

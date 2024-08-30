@@ -29,6 +29,11 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 #include "bg_saga.h"
 #include "b_local.h"
 
+Warp_t	warpList[64];
+CosmeticUnlocks_t cosmeticUnlocks[MAX_COSMETIC_UNLOCKS];
+VoteFloodProtect_t	voteFloodProtect[voteFloodProtectSize];//32 courses, 9 styles, 10 spots on highscore list
+
+
 level_locals_t	level;
 
 int		eventClearTime = 0;

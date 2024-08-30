@@ -23,7 +23,13 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#if defined( __LINT__ )
+#if defined(__WASM__)
+#include "../wasm/gl.h"
+#undef GL_RGBA8
+#define GL_RGBA8 GL_RGBA
+#undef GL_RGB8
+#define GL_RGB8 GL_RGB
+#elif defined( __LINT__ )
 #	include <GL/gl.h>
 #elif defined( _WIN32 )
 #	include <windows.h>

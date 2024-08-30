@@ -21,6 +21,10 @@ if(NOT InOpenJK)
 	message(FATAL_ERROR "Use the top-level cmake script!")
 endif(NOT InOpenJK)
 
+if (WASM)
+set(INSTALL_RPATH OFF)
+endif()
+
 set(MPGameIncludeDirectories
 	"${MPDir}"
 	"${SharedDir}"
@@ -208,7 +212,11 @@ set(MPGameUiFiles
 source_group("ui" FILES ${MPGameUiFiles})
 set(MPGameFiles ${MPGameFiles} ${MPGameUiFiles})
 
+if(WASM)
+add_library(${MPGame} STATIC ${MPGameFiles})
+else()
 add_library(${MPGame} SHARED ${MPGameFiles})
+endif()
 
 if(NOT MSVC)
 	# remove "lib" prefix for .so/.dylib files

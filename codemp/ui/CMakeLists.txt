@@ -93,7 +93,11 @@ set(MPUIRendererFiles
 source_group("rd-common" FILES ${MPUIRendererFiles})
 set(MPUIFiles ${MPUIFiles} ${MPUIRendererFiles})
 
+if(WASM)
+add_library(${MPUI} STATIC ${MPUIFiles})
+else()
 add_library(${MPUI} SHARED ${MPUIFiles})
+endif()
 
 if(NOT MSVC)
 	# remove "lib" prefix for .so/.dylib files

@@ -87,12 +87,20 @@ set(MPVanillaRendererRdCommonFiles
 	"${MPDir}/rd-common/tr_font.cpp"
 	"${MPDir}/rd-common/tr_font.h"
 	"${MPDir}/rd-common/tr_image_load.cpp"
-	"${MPDir}/rd-common/tr_image_jpg.cpp"
-	"${MPDir}/rd-common/tr_image_tga.cpp"
-	"${MPDir}/rd-common/tr_image_png.cpp"
 	"${MPDir}/rd-common/tr_noise.cpp"
 	"${MPDir}/rd-common/tr_public.h"
 	"${MPDir}/rd-common/tr_types.h")
+
+if(WASM)
+else()
+set(MPVanillaRendererRdCommonFiles
+	${MPVanillaRendererRdCommonFiles}
+	"${MPDir}/rd-common/tr_image_jpg.cpp"
+	"${MPDir}/rd-common/tr_image_tga.cpp"
+	"${MPDir}/rd-common/tr_image_png.cpp")
+endif()
+
+
 source_group("rd-common" FILES ${MPVanillaRendererRdCommonFiles})
 set(MPVanillaRendererFiles ${MPVanillaRendererFiles} ${MPVanillaRendererRdCommonFiles})
 
@@ -132,7 +140,12 @@ set(MPVanillaRendererIncludeDirectories ${MPVanillaRendererIncludeDirectories} $
 set(MPVanillaRendererLibraries ${MPVanillaRendererLibraries} ${OPENGL_LIBRARIES})
 
 set(MPVanillaRendererIncludeDirectories ${MPVanillaRendererIncludeDirectories} ${OpenJKLibDir})
+
+if(WASM)
+add_library(${MPVanillaRenderer} STATIC ${MPVanillaRendererFiles})
+else()
 add_library(${MPVanillaRenderer} SHARED ${MPVanillaRendererFiles})
+endif()
 
 if(NOT MSVC)
 	# remove "lib" prefix for .so/.dylib files
@@ -165,4 +178,7 @@ set_property(TARGET ${MPVanillaRenderer} APPEND PROPERTY COMPILE_OPTIONS ${OPENJ
 
 set_target_properties(${MPVanillaRenderer} PROPERTIES INCLUDE_DIRECTORIES "${MPVanillaRendererIncludeDirectories}")
 set_target_properties(${MPVanillaRenderer} PROPERTIES PROJECT_LABEL "MP Vanilla Renderer")
+
+if(!WASM)
 target_link_libraries(${MPVanillaRenderer} ${MPVanillaRendererLibraries})
+endif()

@@ -61,6 +61,9 @@ set(ZLIB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/lib/zlib/include/ PARENT_SCOPE)
 
 mark_as_advanced(ZLIB_LIBRARIES ZLIB_INCLUDE_DIR)
 
+if(!WASM)
 # We need to build it as position-independent code, because it gets linked into
 # dynamic libraries (the vanilla renderer, for example).
 set_property(TARGET bundled_zlib PROPERTY POSITION_INDEPENDENT_CODE True)
+
+endif()
