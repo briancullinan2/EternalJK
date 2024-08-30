@@ -618,7 +618,15 @@ qboolean FS_CompareZipChecksum(const char *zipfile);
 int		FS_GetFileList(  const char *path, const char *extension, char *listbuf, int bufsize );
 int		FS_GetModList(  char *listbuf, int bufsize );
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 fileHandle_t	FS_FOpenFileWriteAsync( const char *qpath, qboolean safe=qtrue );
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
 fileHandle_t	FS_FOpenFileWrite( const char *qpath, qboolean safe=qtrue );
 // will properly create any needed paths and deal with seperater character issues
 

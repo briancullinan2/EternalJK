@@ -495,6 +495,7 @@ Field_Paste
 void Field_Paste( field_t *edit ) {
 	char	*cbd, *c;
 
+#ifndef __WASM__
 	c = cbd = Sys_GetClipboardData();
 
 	if ( !cbd ) {
@@ -509,6 +510,8 @@ void Field_Paste( field_t *edit ) {
 	}
 
 	Z_Free( cbd );
+#endif
+
 }
 
 /*

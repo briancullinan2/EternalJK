@@ -588,6 +588,7 @@ if(BuildMPEngine)
 	if(WASM)
 	set(MPEngineSysFiles
 		"${MPDir}/wasm/sys_main.cpp"
+		"${SharedDir}/sys/sys_event.cpp"
 		)
 	else()
 	set(MPEngineSysFiles

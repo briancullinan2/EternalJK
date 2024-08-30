@@ -130,7 +130,7 @@ NET_Restart_f
 Sys_DefaultInstallPath
 GetBotLibAPI
 Sys_GetClipboardData
-GetBotLibAPI
+FS_FOpenFileWriteAsync
 
 
 glProgramLocalParameter4fARB

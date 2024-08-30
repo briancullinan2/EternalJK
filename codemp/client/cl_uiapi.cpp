@@ -193,6 +193,7 @@ static void CL_GetGlconfig( glconfig_t *config ) {
 static void GetClipboardData( char *buf, int buflen ) {
 	char	*cbd, *c;
 
+#ifndef __WASM__
 	c = cbd = Sys_GetClipboardData();
 	if ( !cbd ) {
 		*buf = 0;
@@ -206,6 +207,8 @@ static void GetClipboardData( char *buf, int buflen ) {
 	}
 
 	Z_Free( cbd );
+
+#endif
 }
 
 static int GetConfigString(int index, char *buf, int size)

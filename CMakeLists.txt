@@ -311,6 +311,7 @@ elseif (("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" M
 		# add_link_options(-lc)
 		add_link_options("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/lib/clang/18/lib/wasi/libclang_rt.builtins-wasm32.a")
 		add_link_options("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc++.a")
+		add_link_options("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc++abi.a")
 		add_link_options("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc.a")
 		add_link_options(-Wl,--allow-undefined-file=${MPDir}/wasm/wasm.syms)
 		add_link_options(-Wl,--error-limit=0)

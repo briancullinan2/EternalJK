@@ -444,8 +444,17 @@ typedef struct botlib_export_s
 	int (*Test)(int parm0, char *parm1, vec3_t parm2, vec3_t parm3);
 } botlib_export_t;
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
+
 //linking of bot library
 botlib_export_t *GetBotLibAPI( int apiVersion, botlib_import_t *import );
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 /* Library variables:
 
