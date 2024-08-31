@@ -1048,6 +1048,9 @@ const char *Key_KeynumToAscii( int keynum ) {
 	return name;
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 
 /*
 ===================
@@ -1077,6 +1080,9 @@ const char *Key_KeynumToString( int keynum ) {
 
 	return name;
 }
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 /*
 ===================
@@ -1601,6 +1607,10 @@ void CL_CharEvent( int key ) {
 	else if ( cls.state == CA_DISCONNECTED )			Field_CharEvent( &g_consoleField, key );
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 /*
 ===================
 Key_ClearStates
@@ -1616,6 +1626,7 @@ void Key_ClearStates( void ) {
 		kg.keys[i].repeats = 0;
 	}
 }
+
 
 static int keyCatchers = 0;
 
@@ -1640,3 +1651,7 @@ void Key_SetCatcher( int catcher ) {
 
 	keyCatchers = catcher;
 }
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus

@@ -588,6 +588,8 @@ if(BuildMPEngine)
 	if(WASM)
 	set(MPEngineSysFiles
 		"${MPDir}/wasm/sys_main.cpp"
+		"${MPDir}/wasm/dlmalloc.c"
+		"${MPDir}/wasm/sbrk.c"
 		"${SharedDir}/sys/sys_event.cpp"
 		)
 	else()
@@ -667,6 +669,7 @@ if(BuildMPEngine)
 		endif(MakeApplicationBundles)
 	endif(WIN32)
 
+	if(!WASM)
 	if(MakeApplicationBundles)
 		install(CODE "
 			include(BundleUtilities)
@@ -689,15 +692,57 @@ if(BuildMPEngine)
 				COMPONENT ${JKAMPClientComponent})
 		endif()
 	endif(MakeApplicationBundles)
+	endif()
 
 	set_target_properties(${MPEngine} PROPERTIES COMPILE_DEFINITIONS "${MPEngineDefines}")
 
+	if(!WASM)
 	# Hide symbols not explicitly marked public.
 	set_property(TARGET ${MPEngine} APPEND PROPERTY COMPILE_OPTIONS ${OPENJK_VISIBILITY_FLAGS})
+	endif()
 
 	set_target_properties(${MPEngine} PROPERTIES INCLUDE_DIRECTORIES "${MPEngineIncludeDirectories}")
 	set_target_properties(${MPEngine} PROPERTIES PROJECT_LABEL "MP Client")
 	target_link_libraries(${MPEngine} ${MPEngineLibraries})
+
+	if(WASM)
+
+	# exports file TODO this?
+	target_link_options(${MPEngine} PUBLIC
+		-Wl,--export=sprintf
+		-Wl,--export=malloc
+		-Wl,--export=stderr
+		-Wl,--export=stdout
+		-Wl,--export=FS_CreatePath,--export=FS_CreatePathLocation
+		-Wl,--export=free
+		-Wl,--export=errno,--export=_start
+		-Wl,--export=Key_ClearStates,--export=Key_GetCatcher
+		-Wl,--export=Key_SetCatcher,--export=CL_PacketEvent
+		-Wl,--export=s_soundStarted,--export=s_soundMuted,--export=s_knownSfx
+		-Wl,--export=dma,--export=first_click
+		-Wl,--export=Cbuf_AddText,--export=FS_RecordFile
+		-Wl,--export=com_unfocused,--export=Z_Free
+		-Wl,--export=CL_NextDownload,--export=com_fullyInitialized
+		-Wl,--export=Z_Malloc,--export=Sys_QueEvent,--export=MSG_Init
+		-Wl,--export=Com_RunAndTimeServerPacket,--export=Com_Frame
+		-Wl,--export=Cvar_VariableValue,--export=Cvar_VariableIntegerValue
+		-Wl,--export=Cvar_VariableString,--export=Cvar_Get
+		-Wl,--export=cvar_modifiedFlags,--export=WindowResize
+		-Wl,--export=Cvar_Set,--export=Cvar_SetValue
+		-Wl,--export=Cvar_SetIntegerValue,--export=Cvar_CheckRange
+		-Wl,--export=FS_ReadFile
+		-Wl,--export=FS_FreeFile
+		-Wl,--export=FS_GetCurrentGameDir,--export=Key_KeynumToString
+	)
+
+	target_link_libraries(${MPEngine}
+		${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc++.a
+		${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc++abi.a
+		${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc.a
+		${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/lib/clang/18/lib/wasi/libclang_rt.builtins-wasm32.a
+		)
+
+	endif()
 endif(BuildMPEngine)
 
 #        Dedicated Server (Engine) (jampded.exe)

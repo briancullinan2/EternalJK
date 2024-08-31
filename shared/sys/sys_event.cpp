@@ -96,6 +96,10 @@ sysEvent_t Sys_GetEvent( void ) {
 
 	return ev;
 }
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 
 /*
 ================
@@ -150,3 +154,7 @@ void Sys_QueEvent( int evTime, sysEventType_t evType, int value, int value2, int
 
 	lastEvent = ev;
 }
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+

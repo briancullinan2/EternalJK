@@ -56,6 +56,12 @@ void MSG_CheckNETFPSFOverrides(qboolean psfOverrides);
 
 void MSG_initHuffman();
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
+
 void MSG_Init( msg_t *buf, byte *data, int length ) {
 	if (!g_nOverrideChecked)
 	{
@@ -77,6 +83,10 @@ void MSG_Init( msg_t *buf, byte *data, int length ) {
 	buf->data = data;
 	buf->maxsize = length;
 }
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 void MSG_InitOOB( msg_t *buf, byte *data, int length ) {
 	if (!g_nOverrideChecked)

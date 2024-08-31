@@ -32,7 +32,15 @@ void		Sys_PlatformInit( void );
 void		Sys_PlatformExit( void );
 qboolean	Sys_GetPacket( netadr_t *net_from, msg_t *net_message );
 char		*Sys_ConsoleInput( void );
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 void 		Sys_QueEvent( int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr );
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
 void		Sys_SigHandler( int signal );
 #ifdef _WIN32
 extern void	GLimp_Alert(void);

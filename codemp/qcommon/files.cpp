@@ -578,6 +578,105 @@ char *FS_BuildOSPath( const char *base, const char *game, const char *qpath ) {
 	return ospath[toggle];
 }
 
+
+#include "../client/client.h"
+
+extern clientStatic_t		cls;
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
+#ifdef __WASM__
+
+typedef struct altChecksumFiles {
+	char pakFilename[20];
+	unsigned altChecksum;
+	int *headerLongs;
+	int numHeaderLongs;
+} altChecksumFiles_t;
+
+static altChecksumFiles_t hardcoded_checksums[] = {
+};
+
+static int getAltChecksum(const char *pakName, int *altChecksum);
+
+qboolean fs_cgameSawAsync = qfalse;
+qboolean fs_uiSawAsync = qfalse;
+qboolean fs_gameSawAsync = qfalse;
+
+char asyncFiles[1024][MAX_QPATH];
+int numAsyncFiles = 0;
+
+int FS_GetAsyncFiles(char **files, int max) {
+	int i;
+	for(i = 0; i < max && i < numAsyncFiles; i++) {
+		files[i] = asyncFiles[i];
+	}
+	if(fs_cgameSawAsync
+	|| (!cls.cgameStarted && fs_uiSawAsync) /*&& fs_uiSawAsync
+		&& (!com_sv_running->integer || fs_gameSawAsync)*/
+	) {
+		numAsyncFiles = 0;
+		asyncFiles[numAsyncFiles][0] = '\0';
+	}
+	return i;
+}
+
+
+Q_EXPORT void FS_RecordFile(const char *file) {
+
+	if(fs_cgameSawAsync
+	|| (!cls.cgameStarted && fs_uiSawAsync) /*&& fs_uiSawAsync
+		&& (!com_sv_running->integer || fs_gameSawAsync)*/
+	) {
+		numAsyncFiles = 0;
+		asyncFiles[numAsyncFiles][0] = '\0';
+	}
+
+	if(!Q_stristr(file, ".md3")) {
+		return;
+	}
+
+	fs_cgameSawAsync = qfalse;
+	fs_uiSawAsync = qfalse;
+	fs_gameSawAsync = qfalse;
+
+	Q_strncpyz(asyncFiles[numAsyncFiles], (char *)file, MAX_QPATH);
+	numAsyncFiles++;
+}
+
+
+
+static int getAltChecksum(const char *pakName, int *altChecksum) {
+	const altChecksumFiles_t *alt;
+	int c, i;
+	qboolean found = qfalse;
+	int useChecksum = 0;
+	//int useChecksum2;
+	// add alternate checksums
+	for(c = 0; c < ARRAY_LEN(hardcoded_checksums); c++) {
+		alt = &hardcoded_checksums[c];
+		for(i = 0; i < fs_numServerReferencedPaks; i++) {
+			if(alt->altChecksum == (unsigned int)fs_serverReferencedPaks[i]) {
+				found = qtrue;
+				alt->headerLongs[0] = LittleLong( fs_checksumFeed );
+				useChecksum = Com_BlockChecksum( alt->headerLongs, sizeof( alt->headerLongs[0] ) * alt->numHeaderLongs );
+				//useChecksum2 = Com_BlockChecksum( alt->headerLongs + 1, sizeof( alt->headerLongs[0] ) * (alt->numHeaderLongs - 1) );
+				//Com_Printf( "FS_ReferencedPakPureChecksums: (%i) %i == %i (pure: %i, feed: %i)\n",
+				// 	alt->numHeaderLongs, alt->altChecksum, useChecksum2, useChecksum, fs_checksumFeed);
+				break;
+			}
+		}
+	}
+	
+	memcpy(altChecksum, &LittleLong(useChecksum), 4);
+	return found;
+}
+
+#endif
+
 /*
 ============
 FS_CreatePath
@@ -618,6 +717,11 @@ qboolean FS_CreatePath (char *OSPath) {
 	}
 	return qfalse;
 }
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
 
 /*
 =================
@@ -2188,6 +2292,10 @@ long FS_ReadDLLInPAK(const char *filename, void **buffer) {
 	return len;
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 /*
 ============
 FS_ReadFile
@@ -2304,6 +2412,7 @@ long FS_ReadFile( const char *qpath, void **buffer ) {
 	return len;
 }
 
+
 /*
 =============
 FS_FreeFile
@@ -2317,6 +2426,10 @@ void FS_FreeFile( void *buffer ) {
 
 	Z_Free( buffer );
 }
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 /*
 ============
@@ -4368,6 +4481,10 @@ void FS_FilenameCompletion( const char *dir, const char *ext, qboolean stripExt,
 	FS_FreeFileList( filenames );
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 const char *FS_GetCurrentGameDir(bool emptybase)
 {
 	if(fs_gamedirvar->string[0])
@@ -4375,6 +4492,11 @@ const char *FS_GetCurrentGameDir(bool emptybase)
 
 	return emptybase ? "" : BASEGAME;
 }
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
 
 #ifdef MACOS_X
 bool FS_LoadMachOBundle( const char *name )

@@ -88,6 +88,13 @@ const char *Sys_DefaultBasePath( void ) { return "/base"; }
 qboolean Sys_ResetReadOnlyAttribute( const char *ospath ) { return qfalse; }
 char *Sys_DefaultHomePath( void ) { return "/base/home"; }
 
+cvar_t *com_minimized				= NULL;
+cvar_t *com_unfocused				= NULL;
+cvar_t *com_maxfps					= NULL;
+cvar_t *com_maxfpsMinimized	= NULL;
+cvar_t *com_maxfpsUnfocused	= NULL;
+cvar_t *in_joystick					= NULL;
+
 /*
 =================
 Sys_FreeFileList
@@ -320,6 +327,10 @@ glconfig_t *glw_config;
 void CL_GetGlconfig( glconfig_t *glconfig );
 extern clientStatic_t		cls;;
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 void WindowResize(int width, int height) {
 	float windowAspect;
 	glconfig_t *glConfig = &cls.glconfig;
@@ -345,7 +356,13 @@ void WindowResize(int width, int height) {
 		aspect->modificationCount++;
 	}
 }
-						
+
+qboolean FS_CreatePath( char *OSPath );
+Q_EXPORT intptr_t FS_CreatePathLocation = (intptr_t)FS_CreatePath;
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 
 /*

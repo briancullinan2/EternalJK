@@ -806,6 +806,7 @@ void Com_InitPushEvent( void ) {
 	com_pushedEventsTail = 0;
 }
 
+
 /*
 =================
 Com_PushEvent
@@ -861,6 +862,9 @@ sysEvent_t	Com_GetEvent( void ) {
 	}
 	return Com_GetRealEvent();
 }
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 
 /*
 =================
@@ -886,6 +890,9 @@ void Com_RunAndTimeServerPacket( netadr_t *evFrom, msg_t *buf ) {
 		}
 	}
 }
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 /*
 =================
@@ -1513,12 +1520,13 @@ int Com_TimeVal(int minMsec)
 	return timeVal;
 }
 
+
 /*
 =================
 Com_Frame
 =================
 */
-void Com_Frame( void ) {
+void Com_Frame_real( void ) {
 
 #ifndef __WASM__
 	try
@@ -1584,8 +1592,13 @@ void Com_Frame( void ) {
 				NET_Sleep(0);
 			else
 				NET_Sleep(timeVal - 1);
-		} while( (timeVal = Com_TimeVal(minMsec)) != 0 );
+		} 
+#ifdef __WASM__
+		while( qfalse );
+#else
+		while( (timeVal = Com_TimeVal(minMsec)) != 0 );
 		IN_Frame();
+#endif
 
 		lastTime = com_frameTime;
 		com_frameTime = Com_EventLoop();
@@ -1728,6 +1741,19 @@ void Com_Frame( void ) {
 	G2Time_ResetTimers();
 #endif
 }
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
+void Com_Frame( void ) {
+	Com_Frame_real();
+}
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
 
 /*
 =================

@@ -71,5 +71,15 @@ qboolean	Key_IsDown				( int keynum );
 int			Key_StringToKeynum		( char *str );
 qboolean	Key_GetOverstrikeMode	( void );
 void		Key_SetOverstrikeMode	( qboolean state );
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 void		Key_ClearStates			( void );
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
 int			Key_GetKey				( const char *binding );

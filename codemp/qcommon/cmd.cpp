@@ -84,6 +84,11 @@ void Cbuf_Init (void)
 	cmd_text.cursize = 0;
 }
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 /*
 ============
 Cbuf_AddText
@@ -105,6 +110,9 @@ void Cbuf_AddText( const char *text ) {
 	cmd_text.cursize += l;
 }
 
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 /*
 ============

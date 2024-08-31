@@ -109,9 +109,6 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 #include <errno.h>
 #include <stddef.h>
 
-#ifdef __WASM__
-#include "../wasm/sys_overrides.h"
-#endif
 
 //Ignore __attribute__ on non-gcc platforms
 #if !defined(__GNUC__) && !defined(__attribute__)
@@ -147,6 +144,10 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 	#define idppc	1
 #else
 	#define idppc	0
+#endif
+
+#ifdef __WASM__
+#include "../wasm/sys_overrides.h"
 #endif
 
 #include "qcommon/q_platform.h"

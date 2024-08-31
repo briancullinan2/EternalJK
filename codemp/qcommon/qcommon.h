@@ -45,7 +45,13 @@ typedef struct msg_s {
 	int		bit;				// for bitwise reads and writes
 } msg_t;
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 void MSG_Init (msg_t *buf, byte *data, int length);
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 void MSG_InitOOB( msg_t *buf, byte *data, int length );
 void MSG_Clear (msg_t *buf);
 void MSG_WriteData (msg_t *buf, const void *data, int length);
@@ -159,7 +165,13 @@ qboolean	NET_IsLocalAddress (netadr_t adr);
 const char	*NET_AdrToString (netadr_t a);
 qboolean	NET_StringToAdr ( const char *s, netadr_t *a);
 qboolean	NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, msg_t *net_message);
+#ifdef __cplusplus
+extern "C" {
+#endif
 void		NET_Sleep(int msec);
+#ifdef __cplusplus
+}
+#endif
 
 void		Sys_SendPacket( int length, const void *data, netadr_t to );
 //Does NOT parse port numbers, only base addresses.
@@ -369,9 +381,15 @@ files can be execed.
 
 void Cbuf_Init (void);
 // allocates an initial text buffer that will grow as needed
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 
 void Cbuf_AddText( const char *text );
 // Adds command text at the end of the buffer, does NOT add a final \n
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 void Cbuf_ExecuteText( int exec_when, const char *text );
 // this can be used in place of either Cbuf_AddText or Cbuf_InsertText
@@ -474,12 +492,18 @@ The are also occasionally used to communicated information between different
 modules of the program.
 
 */
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 
 cvar_t *Cvar_Get( const char *var_name, const char *value, uint32_t flags, const char *var_desc=NULL );
 // creates the variable if it doesn't exist, or returns the existing one
 // if it exists, the value will not be changed, but flags will be ORed in
 // that allows variables to be unarchived without needing bitflags
 // if value is "", the value will not override a previously set value.
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 void	Cvar_Register( vmCvar_t *vmCvar, const char *varName, const char *defaultValue, uint32_t flags );
 // basically a slightly modified Cvar_Get for the interpreted modules
@@ -489,9 +513,16 @@ void	Cvar_Update( vmCvar_t *vmCvar );
 
 cvar_t	*Cvar_Set2(const char *var_name, const char *value, uint32_t defaultFlags, qboolean force);
 //
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 
 cvar_t	*Cvar_Set( const char *var_name, const char *value );
 // will create the variable with no flags if it doesn't exist
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 cvar_t	*Cvar_SetSafe( const char *var_name, const char *value );
 // same as Cvar_Set, but doesn't force setting the value (respects CVAR_ROM, etc)
@@ -503,16 +534,34 @@ void	Cvar_Server_Set( const char *var_name, const char *value );
 void	Cvar_VM_Set( const char *var_name, const char *value, vmSlots_t vmslot );
 // sometimes we set variables from an untrusted source: fail if flags & CVAR_PROTECTED
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 cvar_t	*Cvar_SetValue( const char *var_name, float value );
+void Cvar_SetIntegerValue( const char *var_name, int value );
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
+
+
 void	Cvar_User_SetValue( const char *var_name, float value );
 void	Cvar_VM_SetValue( const char *var_name, float value, vmSlots_t vmslot );
 // expands value to a string and calls Cvar_Set/Cvar_User_Set/Cvar_VM_Set
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 
 float	Cvar_VariableValue( const char *var_name );
 int		Cvar_VariableIntegerValue( const char *var_name );
 // returns 0 if not defined or non numeric
 
 char	*Cvar_VariableString( const char *var_name );
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 void	Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 // returns an empty string if not defined
 
@@ -546,7 +595,15 @@ char	*Cvar_InfoString_Big( int bit );
 // returns an info string containing all the cvars that have the given bit set
 // in their flags ( CVAR_USERINFO, CVAR_SERVERINFO, CVAR_SYSTEMINFO, etc )
 void	Cvar_InfoStringBuffer( int bit, char *buff, int buffsize );
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 void Cvar_CheckRange( cvar_t *cv, float minVal, float maxVal, qboolean shouldBeIntegral );
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 void	Cvar_Restart(qboolean unsetVM);
 void	Cvar_Restart_f( void );
@@ -604,6 +661,15 @@ char	**FS_ListFiles( const char *directory, const char *extension, int *numfiles
 void	FS_FreeFileList( char **fileList );
 //rwwRMG - changed to fileList to not conflict with list type
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
+qboolean FS_CreatePath (char *OSPath);
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
 void FS_Remove( const char *osPath );
 void FS_HomeRemove( const char *homePath );
 
@@ -656,6 +722,10 @@ int		FS_Read( void *buffer, int len, fileHandle_t f );
 void	FS_FCloseFile( fileHandle_t f );
 // note: you can't just fclose from another DLL, due to MS libc issues
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 long		FS_ReadFile( const char *qpath, void **buffer );
 // returns the length of the file
 // a null buffer will just return the file length without loading
@@ -664,11 +734,23 @@ long		FS_ReadFile( const char *qpath, void **buffer );
 // the buffer should be considered read-only, because it may be cached
 // for other uses.
 
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
 void	FS_ForceFlush( fileHandle_t f );
 // forces flush on files we're writing to.
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 void	FS_FreeFile( void *buffer );
 // frees the memory returned by FS_ReadFile
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 void	FS_WriteFile( const char *qpath, const void *buffer, int size );
 // writes a complete file, creating any subdirectories needed
@@ -683,7 +765,15 @@ void	FS_Flush( fileHandle_t f );
 
 void	FS_FilenameCompletion( const char *dir, const char *ext, qboolean stripExt, callbackFunc_t callback, qboolean allowNonPureFilesOnDisk );
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 const char *FS_GetCurrentGameDir(bool emptybase=false);
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #ifdef MACOS_X
 bool FS_LoadMachOBundle( const char *name );
@@ -787,7 +877,13 @@ int			Com_Filter(char *filter, char *name, int casesensitive);
 int			Com_FilterPath(char *filter, char *name, int casesensitive);
 int			Com_RealTime(qtime_t *qtime);
 qboolean	Com_SafeMode( void );
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 void		Com_RunAndTimeServerPacket(netadr_t *evFrom, msg_t *buf);
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 void		Com_StartupVariable( const char *match );
 // checks for and removes command line "+set var arg" constructs
@@ -892,6 +988,11 @@ int Z_AvailableMemory( void );
 void Z_LogHeap( void );
 */
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 // later on I'll re-implement __FILE__, __LINE__ etc, but for now...
 //
 #ifdef DEBUG_ZONE_ALLOCS
@@ -901,11 +1002,26 @@ void *S_Malloc	( int iSize );					// NOT 0 filled memory only for small allocati
 void *Z_Malloc  ( int iSize, memtag_t eTag, qboolean bZeroit = qfalse, int iAlign = 4);	// return memory NOT zero-filled by default
 void *S_Malloc	( int iSize );					// NOT 0 filled memory only for small allocations
 #endif
+
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
+
 void  Z_MorphMallocTag( void *pvBuffer, memtag_t eDesiredTag );
 void  Z_Validate( void );
 int   Z_MemSize	( memtag_t eTag );
 void  Z_TagFree	( memtag_t eTag );
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 void  Z_Free	( void *ptr );
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 int	  Z_Size	( void *pvAddress);
 void Com_InitZoneMemory(void);
 void Com_InitZoneMemoryVars(void);
@@ -928,7 +1044,16 @@ void Com_TouchMemory( void );
 
 // commandLine should not include the executable name (argv[0])
 void Com_Init( char *commandLine );
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 void Com_Frame( void );
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
 void Com_Shutdown( void );
 
 
@@ -960,8 +1085,14 @@ void CL_CharEvent( int key );
 void CL_MouseEvent( int dx, int dy, int time );
 
 void CL_JoystickEvent( int axis, int value, int time );
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 
 void CL_PacketEvent( netadr_t from, msg_t *msg );
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 void CL_ConsolePrint( const char *text );
 

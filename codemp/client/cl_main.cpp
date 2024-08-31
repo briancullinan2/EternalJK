@@ -1540,6 +1540,11 @@ void CL_BeginDownload( const char *localName, const char *remoteName ) {
 	CL_AddReliableCommand( va("download %s", remoteName), qfalse );
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
+
 /*
 =================
 CL_NextDownload
@@ -1605,6 +1610,10 @@ void CL_NextDownload(void) {
 
 	CL_DownloadsComplete();
 }
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 /*
 =================
@@ -2151,6 +2160,9 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg ) {
 	Com_DPrintf ("Unknown connectionless packet command.\n");
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 
 /*
 =================
@@ -2213,6 +2225,11 @@ void CL_PacketEvent( netadr_t from, msg_t *msg ) {
 		CL_WriteDemoMessage( msg, headerBytes );
 	}
 }
+
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 /*
 ==================

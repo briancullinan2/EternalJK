@@ -499,7 +499,15 @@ void CL_NextDemo( void );
 void CL_ReadDemoMessage( void );
 
 void CL_InitDownloads(void);
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 void CL_NextDownload(void);
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 void CL_GetPing( int n, char *buf, int buflen, int *pingtime );
 void CL_GetPingInfo( int n, char *buf, int buflen );
@@ -544,7 +552,13 @@ void CL_ClearState (void);
 void CL_WritePacket( void );
 
 float CL_KeyState (kbutton_t *key);
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 const char *Key_KeynumToString( int keynum/*, qboolean bTranslate */ ); //note: translate is only called for menu display not configs
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 //
 // cl_parse.c
@@ -647,8 +661,15 @@ void CL_ShaderStateChanged(void);
 //
 void CL_InitUI( void );
 void CL_ShutdownUI( void );
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 int Key_GetCatcher( void );
 void Key_SetCatcher( int catcher );
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
 void LAN_LoadCachedServers();
 void LAN_SaveServersToCache();
 

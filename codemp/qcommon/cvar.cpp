@@ -113,6 +113,12 @@ static cvar_t *Cvar_FindVar( const char *var_name ) {
 	return NULL;
 }
 
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 /*
 ============
 Cvar_VariableValue
@@ -126,7 +132,6 @@ float Cvar_VariableValue( const char *var_name ) {
 		return 0;
 	return var->value;
 }
-
 
 /*
 ============
@@ -155,6 +160,11 @@ char *Cvar_VariableString( const char *var_name ) {
 		return "";
 	return var->string;
 }
+
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 /*
 ============
@@ -734,6 +744,10 @@ cvar_t *Cvar_Set2( const char *var_name, const char *value, uint32_t defaultFlag
 	return var;
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 /*
 ============
 Cvar_Set
@@ -744,6 +758,10 @@ Force cvar to a value
 cvar_t *Cvar_Set( const char *var_name, const char *value) {
 	return Cvar_Set2 (var_name, value, 0, qtrue);
 }
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 /*
 ============
@@ -854,6 +872,10 @@ void Cvar_VM_Set( const char *var_name, const char *value, vmSlots_t vmslot )
 	Cvar_Set2( var_name, value, CVAR_VM_CREATED, qtrue );
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 /*
 ============
 Cvar_SetValue
@@ -869,6 +891,23 @@ cvar_t *Cvar_SetValue( const char *var_name, float value) {
 
 	return Cvar_Set (var_name, val);
 }
+
+/*
+============
+Cvar_SetIntegerValue
+============
+*/
+void Cvar_SetIntegerValue( const char *var_name, int value ) {
+	char	val[32];
+
+	sprintf( val, "%i", value );
+	Cvar_Set( var_name, val );
+}
+
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 /*
 ============
@@ -1505,6 +1544,10 @@ Cvar_InfoStringBuffer
 void Cvar_InfoStringBuffer( int bit, char* buff, int buffsize ) {
 	Q_strncpyz(buff,Cvar_InfoString(bit),buffsize);
 }
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 
 /*
 =====================
@@ -1521,6 +1564,10 @@ void Cvar_CheckRange( cvar_t *var, float min, float max, qboolean integral )
 	// Force an initial range check
 	Cvar_Set( var->name, var->string );
 }
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
 
 /*
 =====================

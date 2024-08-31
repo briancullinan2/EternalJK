@@ -181,15 +181,13 @@ StaticMem_t gNumberString[] = {
 	{ {ZONE_MAGIC, TAG_STATIC,2,NULL,NULL},{'9','\0'},{ZONE_MAGIC}},
 };
 
+extern qboolean CM_DeleteCachedMap(qboolean bGuaranteedOkToDelete);
+
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
 
 extern qboolean SND_RegisterAudio_LevelLoadEnd(qboolean bDeleteEverythingNotUsedThisLevel);
-#ifdef __cplusplus
-}
-#endif // __cplusplus
-
 
 qboolean gbMemFreeupOccured = qfalse;
 void *Z_Malloc(int iSize, memtag_t eTag, qboolean bZeroit /* = qfalse */, int iUnusedAlign /* = 4 */)
@@ -230,7 +228,6 @@ void *Z_Malloc(int iSize, memtag_t eTag, qboolean bZeroit /* = qfalse */, int iU
 
 			// ditch the BSP cache...
 			//
-			extern qboolean CM_DeleteCachedMap(qboolean bGuaranteedOkToDelete);
 			if (CM_DeleteCachedMap(qfalse))
 			{
 				gbMemFreeupOccured = qtrue;
@@ -341,6 +338,10 @@ void *Z_Malloc(int iSize, memtag_t eTag, qboolean bZeroit /* = qfalse */, int iU
 	return pvReturnMem;
 }
 
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
 // Special wrapper around Z_Malloc for better separation between the main engine
 // code and the bundled minizip library.
 
@@ -448,6 +449,9 @@ int Z_Size(void *pvAddress)
 	return pMemory->iSize;
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 
 // Frees a block of memory...
 //
@@ -492,6 +496,9 @@ void Z_Free(void *pvAddress)
 	Zone_FreeBlock(pMemory);
 }
 
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 int Z_MemSize(memtag_t eTag)
 {
