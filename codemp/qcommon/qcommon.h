@@ -349,9 +349,19 @@ void			VM_Init( void );
 vm_t			*VM_CreateLegacy( vmSlots_t vmSlot, intptr_t (*systemCalls)(intptr_t *) );
 vm_t			*VM_Create( vmSlots_t vmSlot );
 void			 VM_Free( vm_t *vm );
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 void			 VM_Clear(void);
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 vm_t			*VM_Restart( vm_t *vm );
+#ifdef __cplusplus
 intptr_t QDECL	 VM_Call( vm_t *vm, int callNum, intptr_t arg0 = 0, intptr_t arg1 = 0, intptr_t arg2 = 0, intptr_t arg3 = 0, intptr_t arg4 = 0, intptr_t arg5 = 0, intptr_t arg6 = 0, intptr_t arg7 = 0, intptr_t arg8 = 0, intptr_t arg9 = 0, intptr_t arg10 = 0, intptr_t arg11 = 0 );
+#else
+intptr_t QDECL	 VM_Call( vm_t *vm, int callNum, intptr_t arg0, intptr_t arg1, intptr_t arg2, intptr_t arg3, intptr_t arg4, intptr_t arg5, intptr_t arg6, intptr_t arg7, intptr_t arg8, intptr_t arg9, intptr_t arg10, intptr_t arg11 );
+#endif
 void			 VM_Shifted_Alloc( void **ptr, int size );
 void			 VM_Shifted_Free( void **ptr );
 void			*VM_ArgPtr( intptr_t intValue );
@@ -858,7 +868,13 @@ MISC
 #define RoundUp(N, M) ((N) + ((unsigned int)(M)) - (((unsigned int)(N)) % ((unsigned int)(M))))
 #define RoundDown(N, M) ((N) - (((unsigned int)(N)) % ((unsigned int)(M))))
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 char		*CopyString( const char *in );
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 void		Info_Print( const char *s );
 
 void		Com_BeginRedirect (char *buffer, int buffersize, void (*flush)(char *));
@@ -1004,24 +1020,13 @@ void *S_Malloc	( int iSize );					// NOT 0 filled memory only for small allocati
 #endif
 
 
-#ifdef __cplusplus
-}
-#endif // __cplusplus
-
-
 void  Z_MorphMallocTag( void *pvBuffer, memtag_t eDesiredTag );
 void  Z_Validate( void );
 int   Z_MemSize	( memtag_t eTag );
 void  Z_TagFree	( memtag_t eTag );
 
-#ifdef __cplusplus
-extern "C" {
-#endif // __cplusplus
 void  Z_Free	( void *ptr );
 
-#ifdef __cplusplus
-}
-#endif // __cplusplus
 int	  Z_Size	( void *pvAddress);
 void Com_InitZoneMemory(void);
 void Com_InitZoneMemoryVars(void);
@@ -1041,6 +1046,9 @@ void Hunk_Log( void);
 void Hunk_Trash( void );
 
 void Com_TouchMemory( void );
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 // commandLine should not include the executable name (argv[0])
 void Com_Init( char *commandLine );

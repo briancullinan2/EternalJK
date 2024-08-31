@@ -298,11 +298,17 @@ if(BuildMPEngine OR BuildMPDed)
 		"${MPDir}/qcommon/tags.h"
 		"${MPDir}/qcommon/timing.h"
 		"${MPDir}/qcommon/vm.cpp"
-		"${MPDir}/qcommon/z_memman_pc.cpp"
 
 		${SharedCommonFiles}
 		)
-		
+
+		if(!WASM)
+			set(MPEngineAndDedCommonFiles ${MPEngineAndDedCommonFiles} "${MPDir}/qcommon/z_memman_pc.cpp")
+		else()
+			# set(MPEngineAndDedCommonFiles ${MPEngineAndDedCommonFiles} "${MPDir}/wasm/Z_Malloc.c")
+			set(MPEngineAndDedCommonFiles ${MPEngineAndDedCommonFiles} "${MPDir}/qcommon/z_memman_pc.cpp")
+		endif()
+
 		if(MSVC) #dunno how to do this for other compilers
 			set_source_files_properties(${MPDir}/qcommon/cm_polylib.cpp PROPERTIES COMPILE_FLAGS /arch:IA32)
 		endif(MSVC)

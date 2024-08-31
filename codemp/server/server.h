@@ -432,7 +432,14 @@ playerState_t *SV_GameClientNum( int num );
 svEntity_t	*SV_SvEntityForGentity( sharedEntity_t *gEnt );
 sharedEntity_t *SV_GEntityForSvEntity( svEntity_t *svEnt );
 void		SV_InitGameProgs ( void );
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 void		SV_ShutdownGameProgs ( void );
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
 qboolean	SV_inPVS (const vec3_t p1, const vec3_t p2);
 
 //

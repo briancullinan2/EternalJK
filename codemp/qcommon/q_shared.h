@@ -317,6 +317,9 @@ typedef enum {
 	#define HUNK_DEBUG
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 typedef enum {
 	h_high,
 	h_low,
@@ -324,6 +327,9 @@ typedef enum {
 } ha_pref;
 
 void *Hunk_Alloc( int size, ha_pref preference );
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #define Com_Memset memset
 #define Com_Memcpy memcpy
@@ -698,6 +704,9 @@ void Info_SetValueForKey_Big( char *s, const char *key, const char *value );
 qboolean Info_Validate( const char *s );
 qboolean Info_NextPair( const char **s, char *key, char *value );
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 // this is only here so the functions in q_shared.c and bg_*.c can link
 #if defined( _GAME ) || defined( _CGAME ) || defined( UI_BUILD )
 	extern NORETURN_PTR void (*Com_Error)( int level, const char *error, ... );
@@ -706,6 +715,9 @@ qboolean Info_NextPair( const char **s, char *key, char *value );
 	void NORETURN QDECL Com_Error( int level, const char *error, ... );
 	void QDECL Com_Printf( const char *msg, ... );
 #endif
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 
 /*

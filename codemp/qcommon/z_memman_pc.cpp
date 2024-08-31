@@ -791,9 +791,15 @@ qboolean Hunk_CheckMark( void ) {
 	return qfalse;
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 void CL_ShutdownCGame( void );
 void CL_ShutdownUI( void );
 void SV_ShutdownGameProgs( void );
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 /*
 =================

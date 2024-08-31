@@ -643,13 +643,27 @@ void CIN_DrawCinematic (int handle);
 void CIN_SetExtents (int handle, int x, int y, int w, int h);
 void CIN_SetLooping (int handle, qboolean loop);
 void CIN_UploadCinematic(int handle);
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 void CIN_CloseAllVideos(void);
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 //
 // cl_cgame.c
 //
 void CL_InitCGame( void );
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 void CL_ShutdownCGame( void );
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
 qboolean CL_GameCommand( void );
 void CL_CGameRendering( stereoFrame_t stereo );
 void CL_SetCGameTime( void );
@@ -660,10 +674,10 @@ void CL_ShaderStateChanged(void);
 // cl_ui.c
 //
 void CL_InitUI( void );
-void CL_ShutdownUI( void );
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
+void CL_ShutdownUI( void );
 int Key_GetCatcher( void );
 void Key_SetCatcher( int catcher );
 #ifdef __cplusplus

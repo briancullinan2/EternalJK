@@ -247,6 +247,9 @@ void QDECL Com_OPrintf( const char *fmt, ...)
 	printf("%s", msg);
 #endif
 }
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 
 /*
 =============
@@ -314,6 +317,9 @@ void NORETURN QDECL Com_Error( int code, const char *fmt, ... ) {
 	Sys_Error ("%s", com_errorMessage);
 }
 
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 /*
 =============
@@ -1160,6 +1166,14 @@ static void Com_CatchError ( int code )
 	}
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+void Com_InitSmallZoneMemory( void );
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
 /*
 =================
 Com_Init
@@ -1181,6 +1195,9 @@ void Com_Init( char *commandLine ) {
 		// do this before anything else decides to push events
 		Com_InitPushEvent();
 
+		//#ifdef __WASM__
+		//Com_InitSmallZoneMemory();
+		//#endif
 		Com_InitZoneMemory();
 		Cvar_Init ();
 
@@ -1196,7 +1213,9 @@ void Com_Init( char *commandLine ) {
 		// override anything from the config files with command line args
 		Com_StartupVariable( NULL );
 
+#ifndef __WASM__
 		Com_InitZoneMemoryVars();
+#endif
 		Cmd_Init ();
 
 		// Seed the random number generator
