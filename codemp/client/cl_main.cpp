@@ -2640,6 +2640,10 @@ void CL_StartHunkUsers( void ) {
 	}
 }
 
+void *CL_Z_Malloc( int size, memtag_t eTag, qboolean bZeroit, int align ) {
+	return Z_Malloc( size, eTag, bZeroit );
+}
+
 /*
 ============
 CL_InitRef
@@ -2710,7 +2714,7 @@ void CL_InitRef( void ) {
 	ri.Hunk_FreeTempMemory = Hunk_FreeTempMemory;
 	ri.Hunk_Alloc = Hunk_Alloc;
 	ri.Hunk_MemoryRemaining = Hunk_MemoryRemaining;
-	ri.Z_Malloc = Z_Malloc;
+	ri.Z_Malloc = CL_Z_Malloc;
 	ri.Z_Free = Z_Free;
 	ri.Z_MemSize = Z_MemSize;
 	ri.Z_MorphMallocTag = Z_MorphMallocTag;

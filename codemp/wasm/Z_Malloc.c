@@ -83,20 +83,11 @@ typedef enum {
 } errorParm_t;
 
 
+#define TAGDEF(blah) TAG_ ## blah
 typedef enum {
-	TAG_FREE,
-	TAG_GENERAL,
-	TAG_PACK,
-	TAG_SEARCH_PATH,
-	TAG_SEARCH_PACK,
-	TAG_SEARCH_DIR,
-	TAG_BOTLIB,
-	TAG_RENDERER,
-	TAG_CLIENTS,
-	TAG_SMALL,
-	TAG_STATIC,
-	TAG_COUNT
-} memtag_t;
+	#include "qcommon/tags.h"
+} memtag;
+typedef unsigned memtag_t;
 
 #ifdef ZONE_DEBUG
 typedef struct zonedebug_s {
@@ -620,10 +611,10 @@ Z_TagMalloc
 ================
 */
 #ifdef ZONE_DEBUG
-void *Z_TagMallocDebug( int size, memtag_t tag, char *label, char *file, int line ) {
+static void *Z_TagMallocDebug( int size, memtag_t tag, char *label, char *file, int line ) {
 	int		allocSize;
 #else
-void *Z_TagMalloc( int size, memtag_t tag ) {
+static void *Z_TagMalloc( int size, memtag_t tag ) {
 #endif
 	int		extra;
 #ifndef USE_MULTI_SEGMENT
@@ -746,9 +737,10 @@ Z_Malloc
 #ifdef __WASM__
 void *Z_Malloc(size_t) __attribute__((weak, alias("Z_MallocDebug")));
 #endif
-void *Z_MallocDebug( int size, memtag_t eTag, qboolean bZeroit, int iAlign, char *label, char *file, int line )
+void *Z_MallocDebug( int size, memtag_t eTag, qboolean bZeroit, char *label, char *file, int line )
 #else
-void *Z_Malloc( int size, memtag_t eTag, qboolean bZeroit, int iAlign )
+__attribute__((visbility("default")));
+extern void *Z_Malloc( int size, memtag_t eTag, qboolean bZeroit )
 #endif
 {
 	void	*buf;
@@ -901,9 +893,9 @@ static void Zone_Stats( const char *name, const memzone_t *z, qboolean printDeta
 			st.zoneBlocks++;
 			if ( block->tag == TAG_BOTLIB ) {
 				st.botlibBytes += block->size;
-			} else if ( block->tag == TAG_RENDERER ) {
-				st.rendererBytes += block->size;
-			}
+			}// else if ( block->tag == TAG_RENDERER ) {
+			//	st.rendererBytes += block->size;
+			//}
 		} else {
 			st.freeBytes += block->size;
 			st.freeBlocks++;
@@ -1021,7 +1013,8 @@ Com_InitZoneMemory
 void Com_InitZoneMemory( void ) {
 	int		mainZoneSize;
 	cvar_t	*cv;
-
+	
+	Com_InitSmallZoneMemory();
 	// Please note: com_zoneMegs can only be set on the command line, and
 	// not in q3config.cfg or Com_StartupVariable, as they haven't been
 	// executed by this point. It's a chicken and egg problem. We need the
@@ -1030,7 +1023,7 @@ void Com_InitZoneMemory( void ) {
 
 	// allocate the random block zone
 	cv = Cvar_Get( "com_zoneMegs", XSTRING( DEF_COMZONEMEGS ), CVAR_LATCH | CVAR_ARCHIVE, NULL );
-	Cvar_CheckRange( cv, 1, 0xFFFFFFFF, qtrue );
+	Cvar_CheckRange( cv, 1, 99999999.0f, qtrue );
 
 #ifndef USE_MULTI_SEGMENT
 	if ( cv->integer < DEF_COMZONEMEGS )
@@ -1391,7 +1384,7 @@ void *Hunk_AllocateTempMemory( int size ) {
 	// memory systems
 	if ( s_hunkData == NULL )
 	{
-		return Z_Malloc(size, TAG_GENERAL, qfalse, 4);
+		return Z_Malloc(size, TAG_GENERAL, qfalse);
 	}
 
 	Hunk_SwapBanks();

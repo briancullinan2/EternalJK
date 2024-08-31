@@ -201,7 +201,8 @@ int Sys_ParseArgs( int argc, char* argv[] )
 extern "C" {
 #endif // __cplusplus
 
-Q_EXPORT int _start( int argc, char* argv[] )
+__attribute__ ((noreturn))
+int _initialize( int argc, char* argv[] )
 {
 	char con_title[ MAX_CVAR_VALUE_STRING ];
 	int xpos, ypos;
@@ -242,7 +243,7 @@ Q_EXPORT int _start( int argc, char* argv[] )
 
 	//Sys_SetStatus("Starting network...\n");
 
-	NET_Init();
+	//NET_Init();
 
 	// JavaScript console doesn't report input
   Cvar_Set( "ttycon", "0" );

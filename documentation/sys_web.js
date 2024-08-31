@@ -255,7 +255,7 @@ function Sys_Exit(code) {
 
 function Sys_Error(fmt, args) {
 	let fmtStr = addressToString(fmt)
-	let arg1 = addressToString(args)
+	let arg1 = addressToString(HEAPU32[args >> 2])
 	//let len = sprintf(STD.sharedMemory + STD.sharedCounter, fmt, args)
 	console.error('Sys_Error: ', fmtStr, arg1)
 	Sys_Exit( 1 )

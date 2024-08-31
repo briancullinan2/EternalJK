@@ -648,7 +648,7 @@ void SVC_LoadWhitelist( void ) {
 		return;
 	}
 
-	data = (int32_t *)Z_Malloc(len, TAG_TEMP_WORKSPACE);
+	data = (int32_t *)Z_Malloc(len, TAG_TEMP_WORKSPACE, qfalse);
 
 	FS_Read(data, len, f);
 	FS_FCloseFile(f);

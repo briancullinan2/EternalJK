@@ -252,7 +252,7 @@ function Sys_ListFiles (directory, extension, filter, numfiles, wantsubs) {
   // return a copy!
 	let listInMemory
 	if(typeof Z_Malloc != 'undefined') {
-		listInMemory = Z_Malloc( ( matches.length + 1 ) * 4 )
+		listInMemory = Z_Malloc( ( matches.length + 1 ) * 4, 6, 0 )
 	} else {
 		listInMemory = malloc( ( matches.length + 1 ) * 4 )
 	}
@@ -266,7 +266,7 @@ function Sys_ListFiles (directory, extension, filter, numfiles, wantsubs) {
     //matches.push(files[i])
 		let newAddr
 		if(typeof Z_Malloc != 'undefined') {
-			newAddr = Z_Malloc( relativeName.length );
+			newAddr = Z_Malloc( relativeName.length, 6, 0 );
 		} else {
 			newAddr = malloc( relativeName.length );
 		}

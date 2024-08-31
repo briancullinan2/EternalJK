@@ -151,7 +151,13 @@ async function initEngine(program) {
 			window.Z_Malloc = window['Z_MallocDebug']
 		}
 		// Startup args is expecting a char **
-		_start(SYS.startArgs.length, stringsToMemory(SYS.startArgs))
+		try {
+			_initialize(SYS.startArgs.length, stringsToMemory(SYS.startArgs))
+		} catch (e) {
+			if(!e.message.includes('unreachable')) {
+				throw e
+			}
+		}
 		// should have Cvar system by now
 		// this might help prevent this thing that krunker.io does where it lags when it first starts up
 		Com_MaxFPSChanged()

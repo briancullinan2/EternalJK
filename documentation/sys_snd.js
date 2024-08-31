@@ -31,7 +31,7 @@ function S_CodecLoad (name, info) {
     }
   }
 
-  let buf = Z_Malloc(8) // pointer to pointer
+  let buf = Z_Malloc(8, 6) // pointer to pointer
   HEAPU32[buf >> 2] = 0
   
   if ((length = FS_ReadFile(stringToAddress(filenameStr), buf)) > 0 && HEAPU32[buf >> 2] > 0) {
@@ -87,8 +87,8 @@ function SNDDMA_Init() {
   HEAPU32[(dma >> 2) + 4] = 32
   HEAPU32[(dma >> 2) + 5] = 1
   HEAPU32[(dma >> 2) + 6] = 44100
-  //HEAPU32[(dma >> 2) + 7] = Z_Malloc(16384 * 200)
-  HEAPU32[(dma >> 2) + 8] = Z_Malloc(AUDIO_DRIVER.length + 1)
+  //HEAPU32[(dma >> 2) + 7] = Z_Malloc(16384 * 200, 6)
+  HEAPU32[(dma >> 2) + 8] = Z_Malloc(AUDIO_DRIVER.length + 1, 6, 0)
   stringToAddress(AUDIO_DRIVER, HEAPU32[(dma >> 2) + 7])
   if(!listener) {
     InitListener()

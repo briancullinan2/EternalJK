@@ -1011,6 +1011,10 @@ extern "C" {
 
 // later on I'll re-implement __FILE__, __LINE__ etc, but for now...
 //
+#ifdef __WASM__
+void *Z_Malloc  ( int iSize, memtag_t eTag, qboolean bZeroit);	// return memory NOT zero-filled by default
+void *S_Malloc	( int iSize );					// NOT 0 filled memory only for small allocations
+#else
 #ifdef DEBUG_ZONE_ALLOCS
 void *Z_Malloc  ( int iSize, memtag_t eTag, qboolean bZeroit = qfalse, int iAlign = 4);	// return memory NOT zero-filled by default
 void *S_Malloc	( int iSize );					// NOT 0 filled memory only for small allocations
@@ -1018,7 +1022,7 @@ void *S_Malloc	( int iSize );					// NOT 0 filled memory only for small allocati
 void *Z_Malloc  ( int iSize, memtag_t eTag, qboolean bZeroit = qfalse, int iAlign = 4);	// return memory NOT zero-filled by default
 void *S_Malloc	( int iSize );					// NOT 0 filled memory only for small allocations
 #endif
-
+#endif
 
 void  Z_MorphMallocTag( void *pvBuffer, memtag_t eDesiredTag );
 void  Z_Validate( void );

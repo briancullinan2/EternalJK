@@ -190,7 +190,11 @@ extern "C" {
 extern qboolean SND_RegisterAudio_LevelLoadEnd(qboolean bDeleteEverythingNotUsedThisLevel);
 
 qboolean gbMemFreeupOccured = qfalse;
+#ifdef __WASM__
+void *Z_Malloc(int iSize, memtag_t eTag, qboolean bZeroit /* = qfalse */)
+#else
 void *Z_Malloc(int iSize, memtag_t eTag, qboolean bZeroit /* = qfalse */, int iUnusedAlign /* = 4 */)
+#endif
 {
 	gbMemFreeupOccured = qfalse;
 
@@ -350,7 +354,7 @@ extern "C" Q_EXPORT void openjk_minizip_free(void* to_free);
 
 void* openjk_minizip_malloc(int size)
 {
-    return Z_Malloc(size, TAG_MINIZIP, qfalse, 0);
+    return Z_Malloc(size, TAG_MINIZIP, qfalse);
 }
 
 void openjk_minizip_free(void *to_free)
@@ -535,7 +539,7 @@ void Z_TagFree(memtag_t eTag)
 
 
 void *S_Malloc( int iSize ) {
-	return Z_Malloc( iSize, TAG_SMALL );
+	return Z_Malloc( iSize, TAG_SMALL, qfalse );
 }
 
 

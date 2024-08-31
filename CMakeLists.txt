@@ -297,12 +297,21 @@ elseif (("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" M
 		include_directories(${CMAKE_SOURCE_DIR}/lib/zlib/include)
 		include_directories(${CMAKE_SOURCE_DIR}/shared)
 		include_directories(${MPDir})
+
+		add_compile_options(-fPIC)
+		add_compile_options(-fno-short-enums)
+		add_compile_options(-ftree-vectorize -fsigned-char)
 		# add_compile_options(-std=c++11)
+		# add_compile_options(-std=gnu11)
 		add_compile_options(--target=wasm32-wasi)
 		add_compile_options(--no-standard-libraries)
 		add_compile_options(-fno-inline)
+		add_compile_options(-fstrict-aliasing)
 		add_compile_options(-fno-common)
 		add_compile_options(-fno-exceptions)
+		add_compile_options(-D__EMSCRIPTEN__=1)
+		add_compile_options(-D_WASI_EMULATED_SIGNAL -D_WASI_EMULATED_MMAN=1)
+
 		add_compile_options(-D__WASM__=1)
 		add_compile_options(-D__wasi__=1)
 		add_compile_options(-D__wasm32__=1)
@@ -320,13 +329,17 @@ elseif (("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" M
 		set(SharedDefines ${SharedDefines} "__wasi__")
 		set(SharedDefines ${SharedDefines} "__wasm32__")
 
-		# add_link_options(-Wl,--export-dynamic)
+		add_link_options(-Wl,--export-dynamic)
 		add_link_options(--no-standard-libraries)
 		add_link_options(-Wl,--import-memory,--import-table)
-		add_link_options(-Wl,--export=_start)
+		# add_link_options(-Wl,--export=_start)
+		# add_link_options(-Wl,--no-entry)
+		add_link_options(-mexec-model=reactor)
 		add_link_options(-lc++)
+		add_link_options(-lc++abi)
 		add_link_options(-lrt)
 		# add_link_options(-lc)
+		add_link_options(-Wl,--fatal-warnings)
 		#add_link_options("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc++.a")
 		#add_link_options("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc++abi.a")
 		#add_link_options("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc.a")
@@ -365,7 +378,7 @@ elseif (("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" M
 
 	# enable somewhat modern C++
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-	
+
 	if(!WASM)
 	# enable support for multithreading
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")

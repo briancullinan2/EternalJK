@@ -305,7 +305,7 @@ if(BuildMPEngine OR BuildMPDed)
 		if(!WASM)
 			set(MPEngineAndDedCommonFiles ${MPEngineAndDedCommonFiles} "${MPDir}/qcommon/z_memman_pc.cpp")
 		else()
-			# set(MPEngineAndDedCommonFiles ${MPEngineAndDedCommonFiles} "${MPDir}/wasm/Z_Malloc.c")
+			#set(MPEngineAndDedCommonFiles ${MPEngineAndDedCommonFiles} "${MPDir}/wasm/Z_Malloc.c")
 			set(MPEngineAndDedCommonFiles ${MPEngineAndDedCommonFiles} "${MPDir}/qcommon/z_memman_pc.cpp")
 		endif()
 
@@ -639,7 +639,7 @@ if(BuildMPEngine)
 
 	endif() # !__WASM__
 
-	set(MPEngineFiles ${MPEngineFiles} ${MPEngineSysFiles})
+	set(MPEngineFiles ${MPEngineSysFiles} ${MPEngineFiles})
 	source_group("sys" FILES ${MPEngineSysFiles})
 
 
@@ -721,7 +721,7 @@ if(BuildMPEngine)
 		-Wl,--export=stdout
 		-Wl,--export=FS_CreatePath,--export=FS_CreatePathLocation
 		-Wl,--export=free
-		-Wl,--export=errno,--export=_start
+		-Wl,--export=errno,--export=_initialize
 		-Wl,--export=Key_ClearStates,--export=Key_GetCatcher
 		-Wl,--export=Key_SetCatcher,--export=CL_PacketEvent
 		-Wl,--export=s_soundStarted,--export=s_soundMuted,--export=s_knownSfx

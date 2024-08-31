@@ -26,6 +26,7 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 // these macro args get "TAG_" prepended on them for enum purposes, and appear as literal strings for "meminfo" command
 
+	TAGDEF(FREE),
 	TAGDEF(ALL),
 	TAGDEF(BOTLIB),
 	TAGDEF(CLIENTS),					// Memory used for client info

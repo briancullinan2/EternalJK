@@ -1195,9 +1195,6 @@ void Com_Init( char *commandLine ) {
 		// do this before anything else decides to push events
 		Com_InitPushEvent();
 
-		//#ifdef __WASM__
-		//Com_InitSmallZoneMemory();
-		//#endif
 		Com_InitZoneMemory();
 		Cvar_Init ();
 
@@ -1250,6 +1247,16 @@ void Com_Init( char *commandLine ) {
 		Cmd_SetCommandCompletionFunc( "writeconfig", Cmd_CompleteCfgName );
 		Cmd_AddCommand("write", Com_WriteConfig_f, "Write the configuration to file");
 		Cmd_SetCommandCompletionFunc("write", Cmd_CompleteCfgName);
+
+#if 0 //def __WASM__
+}
+
+
+void Com_Init_Filesystem(void) {
+	char	*s;
+	int		qport;
+
+#endif
 
 		Com_ExecuteCfg();
 

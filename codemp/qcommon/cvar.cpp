@@ -93,6 +93,12 @@ static qboolean Cvar_ValidateString( const char *s ) {
 	return qtrue;
 }
 
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 /*
 ============
 Cvar_FindVar
@@ -112,12 +118,6 @@ static cvar_t *Cvar_FindVar( const char *var_name ) {
 
 	return NULL;
 }
-
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif // __cplusplus
 
 /*
 ============
