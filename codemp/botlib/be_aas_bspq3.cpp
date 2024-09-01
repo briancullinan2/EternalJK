@@ -33,7 +33,6 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
  * $Date: 4/22/01 8:52a $
  *
  *****************************************************************************/
-#ifndef __WASM__
 
 #include "qcommon/q_shared.h"
 #include "l_memory.h"
@@ -45,7 +44,6 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 #include "be_aas.h"
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
-
 
 extern botlib_import_t botimport;
 
@@ -491,5 +489,3 @@ int AAS_LoadBSPFile(void)
 	bspworld.loaded = qtrue;
 	return BLERR_NOERROR;
 } //end of the function AAS_LoadBSPFile
-
-#endif
