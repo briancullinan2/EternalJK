@@ -120,13 +120,21 @@ char	*Sys_GetClipboardData( void );	// note that this isn't journaled...
 
 void	Sys_Print( const char *msg );
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 
 // Sys_Milliseconds should only be used for profiling purposes,
 // any game related timing information should come from event timestamps
 extern int		Sys_Milliseconds (bool baseTime = false);
 
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
-int		Sys_Milliseconds2(void);
+
+extern int		Sys_Milliseconds2(void);
+
 void	Sys_Sleep( int msec );
 
 void	Sys_SnapVector( float *v );

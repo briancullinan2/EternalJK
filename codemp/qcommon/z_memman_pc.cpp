@@ -239,6 +239,7 @@ void *Z_Malloc(int iSize, memtag_t eTag, qboolean bZeroit /* = qfalse */, int iU
 			}
 
 
+#ifndef __WASM__
 			// ditch any sounds not used on this level...
 			//
 			if (SND_RegisterAudio_LevelLoadEnd(qtrue))
@@ -246,6 +247,7 @@ void *Z_Malloc(int iSize, memtag_t eTag, qboolean bZeroit /* = qfalse */, int iU
 				gbMemFreeupOccured = qtrue;
 				continue;		// we've dropped at least one sound, so try again with the malloc
 			}
+#endif
 
 #ifndef DEDICATED
 			// ditch any image_t's (and associated GL memory) not used on this level...
@@ -275,6 +277,7 @@ void *Z_Malloc(int iSize, memtag_t eTag, qboolean bZeroit /* = qfalse */, int iU
 			//	again (though this will have freed twice the requested amount in that case), so it'll either work
 			//	eventually or not free up enough and drop through to the final ERR_DROP. No worries...
 			//
+#ifndef __WASM__
 			extern qboolean gbInsideLoadSound;
 			if (!gbInsideLoadSound)
 			{
@@ -292,6 +295,7 @@ void *Z_Malloc(int iSize, memtag_t eTag, qboolean bZeroit /* = qfalse */, int iU
 					continue;
 				}
 			}
+#endif
 
 			// sigh, dunno what else to try, I guess we'll have to give up and report this as an out-of-mem error...
 			//

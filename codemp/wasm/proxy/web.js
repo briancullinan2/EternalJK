@@ -3,7 +3,7 @@ const path = require('path');
 const GAME_DIRECTORY = 'demoq3'
 const WEB_DIRECTORY = path.resolve(__dirname + '/../../../documentation')
 const ASSETS_DIRECTORY = path.resolve(__dirname + '/../../../documentation/' + GAME_DIRECTORY + '/pak0.pk3dir/')
-const BUILD_DIRECTORY = path.resolve(__dirname + '/../../../build/')
+const BUILD_DIRECTORY = path.resolve(__dirname + '/../../../')
 const ALLOWED_DIRECTORIES = [
   WEB_DIRECTORY,
   ASSETS_DIRECTORY,
@@ -11,8 +11,8 @@ const ALLOWED_DIRECTORIES = [
 ]
 
 const BUILD_ORDER = [
-  '.',
-  'release-wasm-js',
+  'build/.',
+  'build-wasm/',
   'debug-wasm-js',
   'release-js-js',
   'debug-js-js',

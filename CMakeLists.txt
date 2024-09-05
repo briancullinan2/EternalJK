@@ -226,11 +226,19 @@ elseif (("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" M
 
 	if (WASM)
 	 	set(BuildMPDed OFF)
+		set(BuildMPRdVulkan OFF)
 
+		add_compile_options(-D__EMSCRIPTEN__=1)
+		add_compile_options(-D__WASM__=1)
+		add_compile_options(-D__wasi__=1)
+		add_compile_options(-D__wasm32__=1)
+		add_compile_options(-fno-exceptions)
+		add_link_options(-Wl,--allow-undefined-file=${MPDir}/wasm/wasm.syms)
+		add_link_options(-Wl,--error-limit=0)
 
 		set(CMAKE_STATIC_LIBRARY_SUFFIX ".wasm")
 		set(CMAKE_SHARED_LIBRARY_SUFFIX ".wasm")
-		
+		set(CMAKE_EXECUTABLE_SUFFIX ".wasm")
 	endif()
 
 	# Visibility can't be set project-wide -- it needs to be specified on a
@@ -361,6 +369,11 @@ set(SharedCommonSafeFiles
 	"${SharedDir}/qcommon/safe/sscanf.h"
 	"${SharedDir}/qcommon/safe/limited_vector.h"
 	)
+
+if(WASM)
+	set(UseInternalZlib ON)
+	set(UseInternalGL ON)
+endif()
 
 
 if(!WASM)

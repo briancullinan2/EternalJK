@@ -271,6 +271,7 @@ var DATE = {
   Sys_Milliseconds: Sys_Milliseconds,
   Sys_MilliSeconds: Sys_Milliseconds,
   Sys_Microseconds: Sys_Microseconds,
+  Sys_Milliseconds2: Sys_Milliseconds,
   Sys_gettime: clock_gettime,
   clock_time_get: clock_gettime,
   clock_res_get: function () { debugger },
@@ -336,6 +337,11 @@ function Sys_wait(status) {
 }
 
 
+function Com_InitSmallZoneMemory() {
+  STD.sharedMemory = malloc(1024 * 1024)
+}
+
+
 function updateGlobalBufferAndViews() {
   let buf = ENV.memory.buffer
   if (!buf.byteLength) {
@@ -360,7 +366,6 @@ function updateGlobalBufferAndViews() {
     Module.HEAPF32 = global.HEAPF32 = new Float32Array(buf);
     Module.HEAPF64 = global.HEAPF64 = new Float64Array(buf);
   }
-  STD.sharedMemory = malloc(1024 * 1024)
   STD.sharedCounter = 0
   let exports = Object.keys(window.Module.exports)
   for (let i = 0; i < exports.length; i++) {
@@ -520,6 +525,7 @@ var STD = {
   emscripten_get_heap_size: _emscripten_get_heap_size,
   emscripten_resize_heap: _emscripten_resize_heap,
   updateGlobalBufferAndViews: updateGlobalBufferAndViews,
+  Com_InitSmallZoneMemory: Com_InitSmallZoneMemory,
 }
 
 

@@ -124,7 +124,7 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 #define PATH_SEP '/'
 #define PATH_SEP_FOREIGN '\\'
 
-#define ARCH_STRING "js"
+#define ARCH_STRING "wasm32"
 
 #define Q3_LITTLE_ENDIAN
 

@@ -1195,6 +1195,9 @@ void Com_Init( char *commandLine ) {
 		// do this before anything else decides to push events
 		Com_InitPushEvent();
 
+#ifdef __WASM__
+		Com_InitSmallZoneMemory();
+#endif
 		Com_InitZoneMemory();
 		Cvar_Init ();
 
@@ -1225,6 +1228,17 @@ void Com_Init( char *commandLine ) {
 		CL_InitKeyCommands();
 
 		com_homepath = Cvar_Get("com_homepath", "", CVAR_INIT);
+
+#ifdef __WASM__
+
+}
+
+Q_EXPORT
+extern "C" void Com_Init_Continue( char *commandLine )  {
+	char	*s;
+	int		qport;
+
+#endif
 
 		FS_InitFilesystem ();
 

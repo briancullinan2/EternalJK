@@ -202,13 +202,17 @@ extern "C" {
 #endif // __cplusplus
 
 __attribute__ ((noreturn))
-int _initialize( int argc, char* argv[] )
+int _initialize( void )
 {
 	char con_title[ MAX_CVAR_VALUE_STRING ];
 	int xpos, ypos;
 	//qboolean useXYpos;
 	char  *cmdline;
 	int   len, i;
+	int argc;
+	char *argv;
+
+#if 0
 
 	if(!argc) {
 		Sys_Error("No startup options specified.");
@@ -231,6 +235,8 @@ int _initialize( int argc, char* argv[] )
 			strcat( cmdline, " " );
 		strcat( cmdline, argv[i] );
 	}
+
+#endif
 
 	/*useXYpos = */ //Com_EarlyParseCmdLine( cmdline, con_title, sizeof( con_title ), &xpos, &ypos );
 

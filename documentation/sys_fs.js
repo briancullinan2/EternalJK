@@ -251,7 +251,7 @@ function Sys_ListFiles (directory, extension, filter, numfiles, wantsubs) {
   })
   // return a copy!
 	let listInMemory
-	if(typeof Z_Malloc != 'undefined') {
+	if(typeof Z_Malloc != 'undefined' && SYS.started) {
 		listInMemory = Z_Malloc( ( matches.length + 1 ) * 4, 6, 0 )
 	} else {
 		listInMemory = malloc( ( matches.length + 1 ) * 4 )

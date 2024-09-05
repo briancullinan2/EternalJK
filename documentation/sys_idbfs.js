@@ -234,18 +234,10 @@ async function readPreFS() {
   // write description to pk3dir so that it loads as a pak when the engine starts
   //   this is key to making async work on fresh loads
   let nameStr = '/base/' + MODNAME + '/pak0.pk3dir/description.txt'
-  if(!FS.virtual['']) {
-    Sys_Mkdir(stringToAddress(''))
-  }
-  if(!FS.virtual['/base' + MODNAME]) {
-    Sys_Mkdir(stringToAddress('/base' + MODNAME))
-  }
-  if(!FS.virtual['/base' + MODNAME + '/pak0.pk3dir']) {
-    Sys_Mkdir(stringToAddress('/base' + MODNAME + '/pak0.pk3dir'))
-  }
-  if(!FS.virtual['/base' + MODNAME + '/pak2.pk3dir']) {
-    Sys_Mkdir(stringToAddress('/base' + MODNAME + '/pak2.pk3dir'))
-  }
+  FS.virtual[''] = { timestamp: new Date(), mode: FS_DIR }
+  FS.virtual['/base' + MODNAME] = { timestamp: new Date(), mode: FS_DIR }
+  FS.virtual['/base' + MODNAME + '/pak0.pk3dir'] = { timestamp: new Date(), mode: FS_DIR }
+  FS.virtual['/base' + MODNAME + '/pak2.pk3dir'] = { timestamp: new Date(), mode: FS_DIR }
   FS.virtual[nameStr] = {
     timestamp: new Date(),
     mode: FS_FILE,

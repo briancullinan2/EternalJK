@@ -44,7 +44,7 @@ Com_RealTime
 Sys_RandomBytes
 Sys_Milliseconds
 Sys_MilliSeconds
-Sys_Milliseconds
+Sys_Milliseconds2
 SDL_StopTextInput
 NET_GetPacket
 NET_AdrToString
@@ -95,6 +95,7 @@ S_CodecInit
 S_CodecShutdown
 
 
+Com_InitSmallZoneMemory
 Sys_FreeFileList
 Sys_Return
 CL_cURL_BeginDownload

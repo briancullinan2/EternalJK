@@ -47,7 +47,13 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 #include "be_aas_funcs.h"
 #include "be_aas_def.h"
 
+#ifndef __WASM__
 extern int Sys_MilliSeconds(void);
+#else
+extern "C" int Sys_Milliseconds2(void);
+#define Sys_MilliSeconds Sys_Milliseconds2
+#endif
+
 
 
 extern botlib_import_t botimport;

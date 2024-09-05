@@ -152,12 +152,14 @@ async function initEngine(program) {
 		}
 		// Startup args is expecting a char **
 		try {
-			_initialize(SYS.startArgs.length, stringsToMemory(SYS.startArgs))
+			_initialize( /* SYS.startArgs.length, stringsToMemory(SYS.startArgs) */ )
 		} catch (e) {
 			if(!e.message.includes('unreachable')) {
 				throw e
 			}
 		}
+		SYS.started = true
+		Com_Init_Continue()
 		// should have Cvar system by now
 		// this might help prevent this thing that krunker.io does where it lags when it first starts up
 		Com_MaxFPSChanged()
@@ -185,14 +187,14 @@ async function initBrowser() {
 	function initPreload() {
 		return new Promise(function (resolve) {
 			setTimeout(function () {
-				resolve(FS.virtual['eternaljk.wasm'].contents)
+				resolve(FS.virtual['eternaljk.wasm32.wasm'].contents)
 			}, 200)
 		})
 	}
 
 	// no delay on remote loads
 	function initStreaming() {
-		return fetch('eternaljk.wasm?time=' + NET.cacheBuster)
+		return fetch('eternaljk.wasm32.wasm?time=' + NET.cacheBuster)
 			.catch(function (e) { console.error(e) })
 			.then(function (response) {
 				if(response && response.status == 200) {
@@ -209,7 +211,7 @@ async function initBrowser() {
 	// might as well start this early, transfer 
 	//    IndexedDB from disk/memory to application memory
 	let bytes
-	if(typeof FS.virtual['eternaljk.wasm'] != 'undefined') {
+	if(typeof FS.virtual['eternaljk.wasm32.wasm'] != 'undefined') {
 		bytes = await Promise.resolve(initPreload())
 	} else {
 		isStreaming = true

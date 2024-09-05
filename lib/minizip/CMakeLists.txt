@@ -44,7 +44,7 @@ if(MSVC)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif(MSVC)
 
-add_library(bundled_minizip STATIC ioapi.c unzip.cpp)
+add_library(bundled_minizip STATIC ioapi.c unzip.c)
 
 # Let consumers get at our bundled copy in the standard CMake way.  These
 # variables are not set in the cache, but instead shadow the variables in the

@@ -446,15 +446,22 @@ public:
 
 	~PoolAllocator()
 	{
+		return;
 		for ( int i = numFree; i < N; i++ )
 		{
 			T *p = &pool[freeAndAllocated[i]];
-
+			if(!p) {
+				continue;
+			}
 			p->~T();
 		}
 
-		delete [] freeAndAllocated;
-		delete [] pool;
+		if(freeAndAllocated) {
+			delete [] freeAndAllocated;
+		}
+		if(pool) {
+			delete [] pool;
+		}
 	}
 
 private:
@@ -537,7 +544,9 @@ class PagedPoolAllocator
 
 		~PagedPoolAllocator ()
 		{
-			delete[] pages;
+			if(pages) {
+				//delete[] pages;
+			}
 		}
 
 	private:

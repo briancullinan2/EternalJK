@@ -367,9 +367,14 @@ if(BuildMPEngine)
 
 	if (NOT WIN32)
 		# OpenGL
-		find_package(OpenGL REQUIRED)
-		set(MPEngineIncludeDirectories ${MPEngineIncludeDirectories} ${OPENGL_INCLUDE_DIR})
-		set(MPEngineLibraries ${MPEngineLibraries} ${OPENGL_LIBRARIES})
+		if(UseInternalGL)
+			set(MPVanillaRendererIncludeDirectories ${MPVanillaRendererIncludeDirectories} ${OpenJKLibDir}/gl)
+		# TODO:	set(MPVanillaRendererLibraries ${MPVanillaRendererLibraries} ${OPENGL_LIBRARIES})
+		else()
+			find_package(OpenGL REQUIRED)
+			set(MPEngineIncludeDirectories ${MPEngineIncludeDirectories} ${OPENGL_INCLUDE_DIR})
+			set(MPEngineLibraries ${MPEngineLibraries} ${OPENGL_LIBRARIES})
+		endif()
 	endif()
 
 	# Discord Rich Presence
@@ -588,6 +593,7 @@ if(BuildMPEngine)
 			"${SharedDir}/sys/con_tty.cpp"
 			)
 	endif(WIN32)
+	endif(WASM)
 
 	set(MPEngineFiles ${MPEngineFiles} ${MPEngineSysFiles})
 	source_group("sys" FILES ${MPEngineSysFiles})
@@ -669,7 +675,7 @@ if(BuildMPEngine)
 		-Wl,--export=stderr
 		-Wl,--export=stdout
 		-Wl,--export=FS_CreatePath,--export=FS_CreatePathLocation
-		-Wl,--export=free
+		-Wl,--export=free,--export=Com_Init_Continue
 		-Wl,--export=errno,--export=_initialize
 		-Wl,--export=Key_ClearStates,--export=Key_GetCatcher
 		-Wl,--export=Key_SetCatcher,--export=CL_PacketEvent
@@ -690,12 +696,14 @@ if(BuildMPEngine)
 		-Wl,--export=FS_GetCurrentGameDir,--export=Key_KeynumToString
 	)
 
-	target_link_libraries(${MPEngine}
-		${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc++.a
-		${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc++abi.a
-		${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc.a
-		${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/lib/clang/18/lib/wasi/libclang_rt.builtins-wasm32.a
-		)
+	 target_link_libraries(${MPEngine}
+	 	${WASI_SDK_PREFIX}/share/wasi-sysroot/lib/wasm32-wasi/libc++abi.a
+	 	${WASI_SDK_PREFIX}/share/wasi-sysroot/lib/wasm32-wasi/libc++.a
+	 	${WASI_SDK_PREFIX}/share/wasi-sysroot/lib/wasm32-wasi/libc.a
+	 	${WASI_SDK_PREFIX}/lib/clang/18/lib/wasi/libclang_rt.builtins-wasm32.a
+	# 	${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc.a
+	# 	${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/
+	 	)
 
 	endif()
 endif(BuildMPEngine)
