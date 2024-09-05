@@ -23,33 +23,6 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "Minimum OS X deployment ver
 set(InOpenJK TRUE)
 
 
-if (APPLE)
-set(COMPILE_PLATFORM "darwin")
-endif()
-
-if(WIN64)
-set(COMPILE_PLATFORM "win")
-endif()
-
-if (NOT WIN32 AND NOT APPLE)
-set(COMPILE_PLATFORM "linux")
-endif()
-
-
-if (WASM)
-	set(MakeApplicationBundles OFF)
-	set(CMAKE_HOST_SYSTEM_PROCESSOR v8)
-	set(CMAKE_SYSTEM_PROCESSOR wasm)
-	set(CMAKE_HOST_SYSTEM_NAME v8)
-	set(CMAKE_SYSTEM_NAME WASI)
-	set(CMAKE_MACOSX_BUNDLE OFF)
-	set(APPLE 0)
-	set(Architecture "wasm")
-	set(CMAKE_OSX_ARCHITECTURES "")
-	set(CMAKE_CROSSCOMPILING ON)
-	set(NO_DEFAULT_PATH ON)
-endif()
-
 
 # Project name
 set(ProjectName "EternalJK" CACHE STRING "Project Name")
@@ -114,10 +87,8 @@ option(UseInternalJPEG   "If set, use bundled libjpeg." ${UseInternalJPEGDefault
 option(UseInternalSDL2   "If set, use bundled SDL2."    ${UseInternalSDL2Default})
 
 # This option won't appear on non-Apple platforms.
-if (!WASM)
 if(APPLE)
   option(MakeApplicationBundles "Whether to build .app application bundles for engines built" ON)
-endif()
 endif()
 
 # Custom CMake Modules needed
@@ -143,9 +114,7 @@ else()
 	set(X86 OFF)
 	if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(arm64|aarch64)$")
 		set(Architecture "arm64")
-		if(!WASM)
 		add_definitions(-DPNG_ARM_NEON_OPT=0)
-		endif()
 	elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^arm")
 		set(Architecture "arm")
 	elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^i.86$")
@@ -206,8 +175,6 @@ include(InstallConfig)
 
 
 
-if(!WASM)
-
 # Operating settings
 if(WIN64)
 	set(SharedDefines ${SharedDefines} "WIN64")
@@ -221,17 +188,7 @@ if (NOT WIN32 AND NOT APPLE)
 	set(SharedDefines "ARCH_STRING=\"${Architecture}\"")
 endif()
 
-endif() # !__WASM__
 
-if (WASM)
-
-set(GSLIncludeDirectory "${GSLIncludeDirectory}" "${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/include/wasm32-wasi/c++/v1")
-set(GSLIncludeDirectory "${GSLIncludeDirectory}" "${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/include/wasm32-wasi")
-set(GSLIncludeDirectory "${GSLIncludeDirectory}" "${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/lib/clang/18/include")
-set(GSLIncludeDirectory "${GSLIncludeDirectory}" "${MPDir}/wasm")
-set(UseInternalSDL2Default   OFF)
-
-endif()
 
 # Compiler settings
 if(MSVC)
@@ -270,83 +227,6 @@ elseif (("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" M
 	if (WASM)
 	 	set(BuildMPDed OFF)
 
-		set(THREADS_PREFER_PTHREAD_FLAG FALSE)
-		set(CMAKE_THREAD_LIBS_INIT FALSE)
-		set(CMAKE_USE_PTHREADS_INIT FALSE)
-		# set(BUILD_WITH_INSTALL_RPATH OFF)
-		# set(SKIP_BUILD_RPATH TRUE)
-		set(INSTALL_RPATH OFF)
-		set(CMAKE_SKIP_RPATH TRUE)
-		set(FRAMEWORK "")
-		set(CMAKE_FRAMEWORK "")
-		set(CMAKE_C_LINK_FLAGS "")
-		set(CMAKE_CXX_LINK_FLAGS "")
-		# set(HAVE_FLAG_ARCH 0)
-		# set(HAVE_FLAG_SEARCH_PATHS_FIRST 0)
-		set(CMAKE_SYSTEM_NAME WASI)
-		set(CMAKE_C_COMPILER "${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/bin/clang")
-		set(CMAKE_CXX_COMPILER "${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/bin/clang++")
-		set(CMAKE_OSX_SYSROOT "")
-		set(CMAKE_OSX_DEPLOYMENT_TARGET "")
-		include_directories("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/include/wasm32-wasi/c++/v1")
-		# include_directories("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/include/wasm32-wasi/c++/v1/cstddef")
-		include_directories("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/include/wasm32-wasi")
-		include_directories("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/lib/clang/18/include")
-		include_directories("${MPDir}/wasm")
-		add_compile_options(-I${CMAKE_SOURCE_DIR}/lib/minizip/include/minizip)
-		include_directories(${CMAKE_SOURCE_DIR}/lib/zlib/include)
-		include_directories(${CMAKE_SOURCE_DIR}/shared)
-		include_directories(${MPDir})
-
-		add_compile_options(-fPIC)
-		add_compile_options(-fno-short-enums)
-		add_compile_options(-ftree-vectorize -fsigned-char)
-		# add_compile_options(-std=c++11)
-		# add_compile_options(-std=gnu11)
-		add_compile_options(--target=wasm32-wasi)
-		add_compile_options(--no-standard-libraries)
-		add_compile_options(-fno-inline)
-		add_compile_options(-fstrict-aliasing)
-		add_compile_options(-fno-common)
-		add_compile_options(-fno-exceptions)
-		add_compile_options(-D__EMSCRIPTEN__=1)
-		add_compile_options(-D_WASI_EMULATED_SIGNAL -D_WASI_EMULATED_MMAN=1)
-
-		add_compile_options(-D__WASM__=1)
-		add_compile_options(-D__wasi__=1)
-		add_compile_options(-D__wasm32__=1)
-		# add_compile_options(-fvisibility=hidden)
-		add_compile_options(-Wimplicit)
-		add_compile_options(-Wno-bitwise-op-parentheses)
-		add_compile_options(-Wno-shift-op-parentheses)
-		# add_compile_options(-MMD)
-		add_compile_options(-Wno-deprecated)
-		add_compile_options(-Wno-macro-redefined)
-		add_compile_options(-Wcast-function-type)
-		option(UseInternalSDL2   OFF)
-
-		set(SharedDefines ${SharedDefines} "__WASM__")
-		set(SharedDefines ${SharedDefines} "__wasi__")
-		set(SharedDefines ${SharedDefines} "__wasm32__")
-
-		add_link_options(-Wl,--export-dynamic)
-		add_link_options(--no-standard-libraries)
-		add_link_options(-Wl,--import-memory,--import-table)
-		# add_link_options(-Wl,--export=_start)
-		# add_link_options(-Wl,--no-entry)
-		add_link_options(-mexec-model=reactor)
-		add_link_options(-lc++)
-		add_link_options(-lc++abi)
-		add_link_options(-lrt)
-		# add_link_options(-lc)
-		add_link_options(-Wl,--fatal-warnings)
-		#add_link_options("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc++.a")
-		#add_link_options("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc++abi.a")
-		#add_link_options("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc.a")
-		#add_link_options("${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/lib/clang/18/lib/wasi/libclang_rt.builtins-wasm32.a")
-		add_link_options(-Wl,--allow-undefined-file=${MPDir}/wasm/wasm.syms)
-		add_link_options(-Wl,--error-limit=0)
-		# add_link_options(-Wl,--traditional-format)
 
 		set(CMAKE_STATIC_LIBRARY_SUFFIX ".wasm")
 		set(CMAKE_SHARED_LIBRARY_SUFFIX ".wasm")
@@ -512,7 +392,6 @@ endif()
 # Always use bundled minizip (sets MINIZIP_{LIBRARIES,INCLUDE_DIR})
 add_subdirectory(lib/minizip)
 
-
 # Add projects
 add_subdirectory(${MPDir})
 # Windows Symbol Server tools
@@ -523,4 +402,3 @@ if(BuildTests)
 	enable_testing()
 	add_subdirectory("tests")
 endif()
-

@@ -1627,7 +1627,6 @@ void Key_ClearStates( void ) {
 	}
 }
 
-
 static int keyCatchers = 0;
 
 /*

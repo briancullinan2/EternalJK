@@ -94,7 +94,7 @@ source_group("rd-common" FILES ${MPUIRendererFiles})
 set(MPUIFiles ${MPUIFiles} ${MPUIRendererFiles})
 
 if(WASM)
-add_library(${MPUI} STATIC ${MPUIFiles})
+add_library(${MPUI} SHARED ${MPUIFiles})
 else()
 add_library(${MPUI} SHARED ${MPUIFiles})
 endif()
